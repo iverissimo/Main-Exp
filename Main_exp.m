@@ -122,7 +122,7 @@ if calibrate == 1
             end
         end
         
-        if i >= end_cond_cal + (num_block_cal - end_cond_cal) %so it runs for all blocks (prevenir casos em que round ? por baixo)
+        if i >= end_cond_cal %so it runs for all blocks
             % if condition reaches sufficient num of blocks, do alternative condition
             if num_cal(1) == end_cond_cal
                 if num_cal(2)== end_cond_cal
@@ -206,9 +206,20 @@ if calibrate == 1
 end
 
 %% Train classifier
-sendEvent('startPhase.cmd','trainersp');
 
-pause(dur_trial_cal); %give some time to train classifier, and see the plots
+comd = -1; %just to run while loop
+while (comd < 0)
+    comd = input('Train classifier? yes - 1, no - 0: ');
+    if (comd == 1)
+        sendEvent('startPhase.cmd','trainersp');
+    elseif (comd == 0)
+        warning('Classifier was not trained, using previously trained classifier');
+        break;
+    else
+        disp('Option not available.')
+        comd = -1;
+    end
+end
 
 %% Part II, With Feedback
 
@@ -222,6 +233,8 @@ while (group < 0)
         group = -1;
     end
 end
+
+sendEvent('startPhase.cmd','contfeedback'); % start continuous feedback phase
 
 if group == 1 || group == 3
     %angle = input('Specify angle for robot movement (0 to 180?): '); %angle for robot max position
@@ -248,8 +261,6 @@ clf;
 
 i = 1; %restart counter (used in part I)
 task(i) = randi(cond); %Uniformly distributed pseudorandom integers between 1 and number of conditions
-
-sendEvent('startPhase.cmd','contfeedback'); % start continuous feedback phase
 
 switch group
     
@@ -401,6 +412,8 @@ switch group
             
             points = 0; %counter for point system
             
+            sendEvent('block','start');
+            
             for j = 1:num_trial         %run trials for block i
                 
                 %block number i
@@ -411,15 +424,15 @@ switch group
                 
                 soundTest(dur_iti); %iti period (beeps)
                 
-                sendEvent('movement',label)
-                
                 initgetwTime; %start var getwTime
                 timeleft = dur_trial; %each trial starts with 12s
                 trial_StartTime = getwTime(); %get current time
                 state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
                 pred = 0; %reset decision values between trials
                 prob = 0;
-
+                
+                sendEvent('trial','start');
+                
                 while(timeleft>0) %will run until trial time is over
                     
                     %%%%%%%%% receive classification outcome %%%%%%%%%%%%
@@ -436,24 +449,24 @@ switch group
                             
                             pred = pred + ev.value; %accumulate decision values
                             
-                            % now do something with the prediction...       
+                            % now do something with the prediction...
                             prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
-                            prob=prob./sum(prob); % convert to normalised probability (multinomial case)
+                            %prob=prob./sum(prob); % convert to normalised probability (multinomial case)
                             
                             %if ( verb>=0 )
-                                fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
+                            fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
                             %end;
                         end
                     end
-                                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    % feedback information... 
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    % feedback information...
                     %points = points + 5*prob; % change in points is weighted by class probs
                     % change in points only if confident in right class
-                    if prob >= thresh %%&& (mod(numel(events),4)==0)% if reach thresh and 
-                       points = points + 1; %number of events multiple of 4 (4Hz prediction rate) - give prediction every second
-                       sendEvent('stimulus','feedback'); %need to send event?                   
+                    if prob >= thresh %%&& (mod(numel(events),4)==0)% if reach thresh and
+                        points = points + 1; %number of events multiple of 4 (4Hz prediction rate) - give prediction every second
+                        sendEvent('stimulus','feedback'); %need to send event?
                     end
-
+                    
                     text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
                     axis([0 10 0 10]);
                     set(gca,'visible','off');
@@ -467,15 +480,15 @@ switch group
                     axis([0 10 0 10]);
                     set(gca,'visible','off');
                     drawnow;
-                 
+                    
                     clf;
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
-%                     if timeleft < dur_feedback
-%                         break; %break while loop if no more time for new feedback
-%                     end        %to avoid longer trials than expected
                 end
+                sendEvent('trial','end');             
             end
+            
+            sendEvent('block','end');
             
             curr_points(i) = points;
             
@@ -485,7 +498,7 @@ switch group
                     
                 elseif (curr_points(i)-curr_points(i-1)>=0)
                     motivtxt = 'Getting there, you can do it!';
-                else                  
+                else
                     motivtxt = 'You can do better.';
                 end
                 
@@ -499,7 +512,7 @@ switch group
             set(gca,'visible','off');
             drawnow;
             
-            pause(dur_iti); %wait 3s between blocks
+            pause(dur_iti); %wait between blocks
             clf;
             
             % count number of blocks per condition
@@ -619,6 +632,9 @@ sendEvent('testing','end'); % start continuous feedback phase
 
 if group == 1 || group == 3
     endSrlPort(srl); %close serial por communication
+else
+    sub = input('Subject: ','s');
+    save([sub '_info.mat'], 'curr_points','task')
 end
 
 text(0,6,goodbyetxtII,'Color',txtColor,'FontSize',txtSize_wlc);

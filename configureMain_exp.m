@@ -35,8 +35,8 @@ txtSize_cue = 70;%50;                        %cue text size
 dur_trial_cal = 5;                              %trial duration [s]
 dur_iti_cal = 3;                                % inter-trial-interval [s]
 
-num_trial_cal = 2;%3;                          % number of trials in one block
-num_block_cal = 3;%24;                             % number of blocks
+num_trial_cal = 3;%2;                          % number of trials in one block
+num_block_cal = 24;%3;                             % number of blocks
 
 cond_cal = 3;                                   % number of conditions being tested
 cond_name_cal = {'abduct your toe','flex your toes','do not move'};
@@ -100,8 +100,8 @@ goodbyetxt = sprintf('\nThank you! \n\nWait for more instructions regarding the 
 dur_trial = 12;                              %trial duration main[s]
 dur_iti = 4.5;                                % inter-trial-interval [s]
 
-num_trial = 2;%3;                          % number of trials in one block
-num_block = 6;%50;                             % number of blocks
+num_trial = 3;%2;                          % number of trials in one block
+num_block = 50;%6;                             % number of blocks
 
 cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
@@ -115,7 +115,7 @@ end_cond = round(num_block/cond); %max number of blocks per condition
 points = 0; %performance feedback counter
 curr_points = zeros(1,num_block); %points obtained in the end of each block
 
-thresh = 0.9; %threshold to reach before giving feedback
+thresh = 0.95; %threshold to reach before giving feedback
 
 welcometxtII_1 = sprintf(['\n\nWelcome to this experiment!' ...
     '\n\nYou will be asked to perform certain movements on cue.' ...

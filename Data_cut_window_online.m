@@ -1,6 +1,6 @@
 function [data,events,hdr] = Data_cut_window_online(traindata,traindevents,hdr,tot_trial,train_wndow,init_offset,ovrl,ovrl_wndow)
 %
-% Author: Inês V., April 2017
+% Author: In?s V., April 2017
 %
 % Function for cutting data into windows, to train a classifier
 % That works for the online case (with iv_startSigProcBuffer)
@@ -40,8 +40,8 @@ for i=1:num_wind   %loop to concatenate several train_wndow within same 5s trial
     
     for m = 1:length(traindevents) %number of events/epochs     
         for h = 1:hdr.nchans %number of channels         
-            for k = 1:(smp_train_wndow-smp_offset+1) %window that we want to slice              
-                data_AvsB(m).buf(h,k) = traindata(m).buf(h,smp_offset+k-1)
+            for k = 1:smp_train_wndow %window that we want to slice              
+                data_AvsB(m).buf(h,k) = traindata(m).buf(h,smp_offset+k)
             end
         end
     end
