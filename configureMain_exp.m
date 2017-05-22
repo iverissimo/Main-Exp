@@ -101,7 +101,7 @@ dur_trial = 12;                              %trial duration main[s]
 dur_iti = 4.5;                                % inter-trial-interval [s]
 
 num_trial = 3;%2;                          % number of trials in one block
-num_block = 50;%6;                             % number of blocks
+num_block = 6;%50;%6;                             % number of blocks
 
 cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
@@ -109,6 +109,8 @@ evt_value = {'toe_abd','rest'}; %event value for type 'movement'
 num_total = num_trial*num_block;            % total number of trials
 dur_feedback = 1;                           % feedback duration (s)
 comport = 'COM5'; %Serial port name for arduino connection
+ang_max = 100; %max angle for robot movement
+ang_min = 0; %min angle for robot movement
 type = [1 2]; %type of condition, matrix of 1xcond
 num = zeros(1,length(type)); %number of blocks per condition, matrix of 1xcond
 end_cond = round(num_block/cond); %max number of blocks per condition

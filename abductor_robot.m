@@ -7,8 +7,8 @@ tic
 
 sendEvent('stimulus','feedback');
 fwrite(srl,angle); % send angle numerical value to arduino
-pause(0.5);
-fwrite(srl,0); % send angle numerical value to arduino
+pause(1);
+fwrite(srl,180); % send angle numerical value to arduino
 pause(1);
 
 toc

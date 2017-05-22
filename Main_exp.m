@@ -235,13 +235,32 @@ while (group < 0)
 end
 
 sendEvent('startPhase.cmd','contfeedback'); % start continuous feedback phase
+angle = -1;
 
 if group == 1 || group == 3
-    %angle = input('Specify angle for robot movement (0 to 180?): '); %angle for robot max position
-    [srl] = initSrlPort(comport); %open arduino serial port
-    %abductor_robot(angle,srl); %run it once just so it goes to initial position
+    
+%     [srl] = initSrlPort(comport); %open arduino serial port
+%     robot_rest(srl); %run it once just so it goes to initial position
+    
+    ang_calib; %launch gui for to select best angle for participant
+    
+    % get the handle to the GUI and wait for it to be closed
+    hGui = findobj('Tag','tformChoiceGui');
+    waitfor(hGui);
+    
+     % continue with script
+    while (angle < 0 )
+        angle = input('Specify angle for robot movement (max 100): '); %angle for robot max position
+        if (ang_min <= angle) && (angle <= ang_max)
+            angle = 180 - angle; %Want it to move 100, but actual motor position is 80
+            break;
+        else
+            disp('Option not available.')
+            angle = -1;
+        end
+    end
+    
 end
-
 
 % Welcome text
 fig = figure(3);
@@ -301,6 +320,8 @@ switch group
             waitforbuttonpress(); %pause period
             clf;
             
+            sendEvent('block','start');
+            
             for j = 1:num_trial         %run trials for block i
                 
                 %block number i
@@ -311,13 +332,13 @@ switch group
                 
                 soundTest(dur_iti); %iti period (beeps)
                 
-                sendEvent('movement',label)
-                
                 initgetwTime; %start var getwTime
                 timeleft = dur_trial; %each trial starts with 5s
                 trial_StartTime = getwTime(); %get current time
                 inc = 1;
                 outcome = zeros(1,round(dur_trial/dur_feedback));
+                
+                sendEvent('trial','start');
                 
                 while(timeleft>0) %will run until trial time is over
                     
@@ -358,7 +379,10 @@ switch group
                     end        %to avoid longer trials than expected
                     inc = inc+1; %increment for outcome counter
                 end
+                sendEvent('trial','end');
             end
+            
+            sendEvent('block','end');
             
             pause(dur_iti); %wait 4.5s between blocks (to avoid corrupting classification of next block)
             
@@ -390,10 +414,11 @@ switch group
                 end
             end
             
-            
+            % if condition reaches sufficient num of blocks, do alternative condition
             if i >= end_cond && num(1) == end_cond
-                % if condition reaches sufficient num of blocks, do alternative condition
                 task(i)= type(2);
+            elseif i >= end_cond && num(2) == end_cond
+                task(i)= type(1);
             end
             
             label = evt_value{task(i)};
@@ -485,7 +510,7 @@ switch group
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
                 end
-                sendEvent('trial','end');             
+                sendEvent('trial','end');
             end
             
             sendEvent('block','end');
@@ -563,6 +588,8 @@ switch group
             waitforbuttonpress(); %pause period
             clf;
             
+            sendEvent('block','start');
+            
             for j = 1:num_trial         %run trials for block i
                 
                 %block number i
@@ -579,6 +606,8 @@ switch group
                 timeleft = dur_trial; %each trial starts with 5s
                 trial_StartTime = getwTime(); %get current time
                 state  = []; %current state of the newevents
+                
+                sendEvent('trial','start');
                 
                 while(timeleft>0) %will run until trial time is over
                     
@@ -612,7 +641,10 @@ switch group
                         break; %break while loop if no more time for new feedback
                     end        %to avoid longer trials than expected
                 end
+                sendEvent('trial','end');
             end
+            
+            sendEvent('block','end');
             
             pause(dur_iti); %wait 3s between blocks (to avoid corrupting classification of next block)
             
