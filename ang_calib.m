@@ -79,6 +79,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 load('ang');
+load('srl')
 abductor_robot(ang,srl)
 
 
@@ -90,10 +91,10 @@ function ang_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of ang as text
 %        str2double(get(hObject,'String')) returns contents of ang as a double
-
+load('srl')
 valstrs = get([handles.ang], 'String');
 ang = str2double(valstrs);
-if (0 <= ang) && (ang <= 100)
+if (0 <= ang) && (ang <= 140)
     ang = 180 - ang;
 else
     warning('Angle not in acceptable range.')

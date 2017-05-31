@@ -311,8 +311,19 @@ switch group
         clf;
         
         for i = 1:num_block
+            if (i > 2)&&(task(i) == task(i-1))&& (task(i-2) == task(i-1))  %to avoid 3xconsecutive tasks
+                if task(i) == 1                   %when task = 1,1,1
+                    task(i) = task(i)+1;
+                else                              %when task = 2,2,2
+                    task(i) = task(i)-1;
+                end
+            end
             
-            task(i) = non_consec(i,task,end_cond,type,num);
+            
+            if i >= end_cond && num(1) == end_cond
+                % if condition reaches sufficient num of blocks, do alternative condition
+                task(i)= type(2);
+            end
             
             label = evt_value{task(i)};
             tsk = cond_name{task(i)};
@@ -327,8 +338,6 @@ switch group
             sendEvent('relax','pause')
             waitforbuttonpress(); %pause period
             clf;
-            
-            points = 0; %counter for point system
             
             sendEvent('block','start');
             
@@ -377,6 +386,7 @@ switch group
                         end
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    
                     text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
                     axis([0 10 0 10]);
                     set(gca,'visible','off'); %block number
@@ -392,17 +402,14 @@ switch group
                     
                     if strcmp(label,'rest') %in rest trials only give visual feed
                         if outcome == 1
-                            pause(dur_feedback); %give some time between point display,
-                            points = points + 1; %to avoid that rest receives much more feedback than abd
+                            points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     else    %in abd trials also give feedback with robot
                         if outcome == 1
                             abductor_robot(angle,srl); %move to angle and return
                             points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     end
                     
@@ -472,8 +479,20 @@ switch group
         clf;
         
         for i = 1:num_block
+            if (i > 2)&&(task(i) == task(i-1))&& (task(i-2) == task(i-1))  %to avoid 3xconsecutive tasks
+                if task(i) == 1                   %when task = 1,1,1
+                    task(i) = task(i)+1;
+                else                              %when task = 2,2,2
+                    task(i) = task(i)-1;
+                end
+            end
             
-            task(i) = non_consec(i,task,end_cond,type,num);
+            % if condition reaches sufficient num of blocks, do alternative condition
+            if i >= end_cond && num(1) == end_cond
+                task(i)= type(2);
+            elseif i >= end_cond && num(2) == end_cond
+                task(i)= type(1);
+            end
             
             label = evt_value{task(i)};
             tsk = cond_name{task(i)};
@@ -544,13 +563,11 @@ switch group
                         if prob >= thresh % 90% confident in positive class
                             points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     else
                         if prob <= 1-thresh % 90% confident in negative class
                             points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     end
                     
@@ -568,10 +585,10 @@ switch group
                     set(gca,'visible','off');
                     drawnow;
                     
+                    clf;
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
                 end
-                clf;
                 sendEvent('trial','end');
             end
             
@@ -622,8 +639,21 @@ switch group
         clf;
         
         for i = 1:num_block
+            if (i > 2)&&(task(i) == task(i-1))&& (task(i-2) == task(i-1))  %to avoid 3xconsecutive tasks
+                if task(i) == 1                   %when task = 1,1,1
+                    task(i) = task(i)+1;
+                else                              %when task = 2,2,2
+                    task(i) = task(i)-1;
+                end
+            end
             
-            task(i) = non_consec(i,task,end_cond,type,num);
+            
+            if i >= end_cond && num(1) == end_cond
+                % if condition reaches sufficient num of blocks, do alternative condition
+                task(i)= type(2);
+            elseif i >= end_cond && num(2) == end_cond
+                task(i)= type(1);
+            end
             
             label = evt_value{task(i)};
             tsk = cond_name{task(i)};
@@ -693,14 +723,12 @@ switch group
                         if prob >= thresh % 90% confident in positive class(rest)
                             points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     else
                         if prob <= 1-thresh % 90% confident in negative class(abd)
                             abductor_robot(angle,srl); %move to angle and return to init position
                             points = points + 1;
                             sendEvent('stimulus','feedback'); %need to send event?
-                            clf;
                         end
                     end
                     
@@ -718,10 +746,10 @@ switch group
                     set(gca,'visible','off');
                     drawnow;
                     
+                    clf;
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
                 end
-                clf;
                 sendEvent('trial','end');
             end
             

@@ -1,5 +1,8 @@
 
 function soundTest(dur_iti)
+%function to give audio cue for trial start
+%INPUT - iti duration [s]
+
 Fs = 8000; %sampling rate [Hz]
 dur_beep = 0.1; %duration of the beep [s]
 beep_time = 0:(1/Fs):dur_beep; %time vector
