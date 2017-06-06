@@ -7,9 +7,11 @@
 % num_trial, num_block
 clear all; close all;
 
-configureMain_exp;
+cfgcls.sub = input('Subject (eg. "sub1"): ','s');
+cfgcls.pth_lab3 = sprintf('/Users/s4831829/output/plots&&others/%s',cfgcls.sub);
+mkdir(cfgcls.pth_lab3);
 
-sub = input('Subject (eg. "sub1"): ','s');
+configureMain_exp;
 
 %% Part I, training/calibration phase
 % similar to design used in first pilot
@@ -729,9 +731,9 @@ sendEvent('testing','end'); % start continuous feedback phase
 %save interesting variables
 if group == 1 || group == 3
     endSrlPort(srl); %close serial por communication
-    save([sub '_info.mat'], 'curr_points','points_abd','points_rest','task','angle')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','points_abd','points_rest','task','angle')
 else
-    save([sub '_info.mat'], 'curr_points','points_abd','points_rest','task')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','points_abd','points_rest','task')
 end
 
 text(0,6,goodbyetxtII,'Color',txtColor,'FontSize',txtSize_wlc);
