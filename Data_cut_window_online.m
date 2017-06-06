@@ -41,7 +41,7 @@ for i=1:num_wind   %loop to concatenate several train_wndow within same 5s trial
     for m = 1:length(traindevents) %number of events/epochs     
         for h = 1:hdr.nchans %number of channels         
             for k = 1:smp_train_wndow %window that we want to slice              
-                data_AvsB(m).buf(h,k) = traindata(m).buf(h,smp_offset+k);
+                data_AvsB(m).buf(h,k) = traindata(m).buf(h,smp_offset+k)
             end
         end
     end

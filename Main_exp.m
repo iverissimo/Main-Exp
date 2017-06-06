@@ -9,6 +9,8 @@ clear all; close all;
 
 configureMain_exp;
 
+sub = input('Subject (eg. "sub1"): ','s');
+
 %% Part I, training/calibration phase
 % similar to design used in first pilot
 
@@ -422,28 +424,14 @@ switch group
                     
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                 end
+                sound_endtrl; %trial end beep
                 clf;
                 sendEvent('trial','end');
             end
             
             sendEvent('block','end');
             
-            curr_points(i) = points;
-            
-            if i>1 % motivational text between blocks
-                if   curr_points(i)>round(dur_trial*num_trial/2) && (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Good job!';
-                    
-                elseif (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Getting there, you can do it!';
-                else
-                    motivtxt = 'You can do better.';
-                end
-                
-                feedtxt = sprintf('Your score is %0.1f.\n\n%s',points,motivtxt);
-            else
-                feedtxt = sprintf('Your score is %0.1f.',points);
-            end
+            points_fdbck; %script to give motivational text in end of block
             
             text(5,5,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -571,28 +559,14 @@ switch group
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
                 end
+                sound_endtrl; %trial end beep
                 clf;
                 sendEvent('trial','end');
             end
             
             sendEvent('block','end');
             
-            curr_points(i) = points;
-            
-            if i>1 % motivational text between blocks
-                if   curr_points(i)>round(dur_trial*num_trial/2) && (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Good job!';
-                    
-                elseif (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Getting there, you can do it!';
-                else
-                    motivtxt = 'You can do better.';
-                end
-                
-                feedtxt = sprintf('Your score is %0.1f.\n\n%s',points,motivtxt);
-            else
-                feedtxt = sprintf('Your score is %0.1f.',points);
-            end
+            points_fdbck; %script to give motivational text in end of block
             
             text(5,5,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -721,28 +695,14 @@ switch group
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
                 end
+                sound_endtrl; %trial end beep
                 clf;
                 sendEvent('trial','end');
             end
             
             sendEvent('block','end');
             
-            curr_points(i) = points;
-            
-            if i>1 % motivational text between blocks
-                if   curr_points(i)>round(dur_trial*num_trial/2) && (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Good job!';
-                    
-                elseif (curr_points(i)-curr_points(i-1)>=0)
-                    motivtxt = 'Getting there, you can do it!';
-                else
-                    motivtxt = 'You can do better.';
-                end
-                
-                feedtxt = sprintf('Your score is %0.1f.\n\n%s',points,motivtxt);
-            else
-                feedtxt = sprintf('Your score is %0.1f.',points);
-            end
+            points_fdbck; %script to give motivational text in end of block
             
             text(5,5,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -766,11 +726,12 @@ end
 
 sendEvent('testing','end'); % start continuous feedback phase
 
+%save interesting variables
 if group == 1 || group == 3
     endSrlPort(srl); %close serial por communication
+    save([sub '_info.mat'], 'curr_points','points_abd','points_rest','task','angle')
 else
-    sub = input('Subject: ','s');
-    save([sub '_info.mat'], 'curr_points','task')
+    save([sub '_info.mat'], 'curr_points','points_abd','points_rest','task')
 end
 
 text(0,6,goodbyetxtII,'Color',txtColor,'FontSize',txtSize_wlc);
