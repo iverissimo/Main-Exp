@@ -381,15 +381,7 @@ switch group
                         end
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off'); %block number
-                    
-                    cue_move = text(5,6,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off'); %type of movement
-                    
-                    drawnow;
+                    text_display; %display block number, type of task and current points
                     
                     %random outcome
                     outcome = randi(2);
@@ -410,19 +402,7 @@ switch group
                         end
                     end
                     
-                    text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    cue_move = text(5,6,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    feedtxt = sprintf('Current score is %0.1f.',points);
-                    text(5,4,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    drawnow;
+                    text_display; %display block number, type of task and current points
                     
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                 end
@@ -528,6 +508,8 @@ switch group
                         end
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    text_display; %display block number, type of task and current points
+                    
                     % feedback information...
                     % change in points only if confident in right class
                     if strcmp(label,'rest')==1
@@ -544,19 +526,7 @@ switch group
                         end
                     end
                     
-                    text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    cue_move = text(5,6,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    feedtxt = sprintf('Current score is %0.1f.',points);
-                    text(5,4,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    drawnow;
+                    text_display; %display block number, type of task and current points
                     
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     
@@ -616,6 +586,7 @@ switch group
             clf;
             
             points = 0; %counter for point system
+            
             sendEvent('block','start');
             
             for j = 1:num_trial         %run trials for block i
@@ -663,6 +634,8 @@ switch group
                     end
                     
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    text_display; %display block number, type of task and current points
+                    
                     % feedback information...
                     % change in points only if confident in right class
                     if strcmp(label,'rest')==1
@@ -680,19 +653,7 @@ switch group
                         end
                     end
                     
-                    text(5,8,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    cue_move = text(5,6,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    
-                    feedtxt = sprintf('Current score is %0.1f.',points);
-                    text(5,4,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-                    axis([0 10 0 10]);
-                    set(gca,'visible','off');
-                    drawnow;
+                    text_display; %display block number, type of task and current points
                     
                     timeleft = dur_trial - (getwTime()-trial_StartTime);
                     

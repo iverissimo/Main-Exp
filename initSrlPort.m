@@ -1,4 +1,10 @@
 
+%instrhwinfo('serial')
+%to check name of serial port
+
+%if mac use instrfind to see in matlab serial port status
+%or write in terminal  ls /dev/tty.* and it will give back comport names
+
 function [srl] = initSrlPort(comport)
 
 delete(instrfindall);
