@@ -1,8 +1,9 @@
 
 %% script to run in separate MATLAB window
-pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat');
-load(pname);
-
+% pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat');
+% load(pname);
+addpath(fullfile('/Users/s4831829/Main Exp/'));
+configureMain_exp_v2;
 %load('cfgcls.mat') %struct with parameters defined in Main_exp
 
 %startSigProcBuffer(varargin);
@@ -10,7 +11,7 @@ iv_startSigProcBuffer('phaseEventType','startPhase.cmd',...
     'epochEventType',{{'movement'} {'rest' 'toe_abd'}},'trlen_ms',cfgcls.tot_trl,...
     'clsfr_type','ersp','freqband',cfgcls.freqband,'contPredFilt',@(x,s) biasFilt(x,s,3*60*4),...
     'contFeedbackOpts',{'trlen_ms',cfgcls.train_wndow,'overlap',1/3},...
-    'trainOpts',{'adaptspatialfiltFn','rmEMGFilt'});
+    'trainOpts',trainOpts);
 
 %cont_applyClsfr
 % bias adaptation filter, length 3 minutes
