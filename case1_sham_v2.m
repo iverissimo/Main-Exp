@@ -106,7 +106,7 @@ for i = 1:num_block
             if outcome == 1
                 %pause(dur_feedback); %give some time between point display,
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             
@@ -200,7 +200,7 @@ for i = 1:num_block
             if outcome == 1
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             

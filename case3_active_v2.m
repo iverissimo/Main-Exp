@@ -102,7 +102,7 @@ for i = 1:num_block
             
             if prob >= thresh % 90% confident in positive class [rest]
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             
@@ -193,7 +193,7 @@ for i = 1:num_block
             if prob <= 1-thresh % 90% confident in negative class [abd]
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             

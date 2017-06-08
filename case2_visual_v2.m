@@ -102,7 +102,7 @@ for i = 1:num_block
             
             if prob >= thresh % 90% confident in positive class [rest]
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             
@@ -192,7 +192,7 @@ for i = 1:num_block
             % change in points only if confident in right class
             if prob <= 1-thresh % 90% confident in negative class [abd]
                 points = points + 1;
-                sendEvent('stimulus','feedback'); %need to send event?
+                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
                 clf;
             end
             
