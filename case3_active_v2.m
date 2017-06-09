@@ -5,7 +5,7 @@
 text(0,6,welcometxtII_3_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
 block0; %do example block
@@ -13,20 +13,20 @@ block0; %do example block
 text(0,6,welcometxtII_5,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
 for i = 1:num_block
     
     %PAUSE between blocks
-    text(5,5,sprintf('PAUSE \n\nPress the spacebar to start...'),...
+    text(5,5,sprintf('PAUSE \n\nPress button 1 to start...'),...
         'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
     axis([0 10 0 10]);
     set(gca,'visible','off');
     drawnow;
     
     sendEvent('relax','pause')
-    waitforbuttonpress(); %pause period
+    press_button; %pause period
     clf;
     
     points = 0; %counter for point system, starts with 0 for each block

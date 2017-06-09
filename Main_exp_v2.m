@@ -36,13 +36,13 @@ if calibrate == 1
     text(0,6,welcometxt1,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
-    waitforbuttonpress();
+    press_button;
     clf;
     
     text(0,6,welcometxt2,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
-    waitforbuttonpress();
+    press_button;
     
     soundTest(dur_iti_cal);
     pause(1)
@@ -52,7 +52,7 @@ if calibrate == 1
     text(0,6,welcometxt3,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
-    waitforbuttonpress();
+    press_button;
     clf;
     
     %instructions loop
@@ -67,7 +67,7 @@ if calibrate == 1
             text(0,6,welcometxt4,'Color',txtColor,'FontSize',txtSize_wlc);
             axis([0 10 0 10]);
             set(gca,'visible','off');
-            waitforbuttonpress();
+            press_button;
             clf;
             
         elseif i == 3
@@ -76,7 +76,7 @@ if calibrate == 1
             text(0,6,welcometxt5,'Color',txtColor,'FontSize',txtSize_wlc);
             axis([0 10 0 10]);
             set(gca,'visible','off');
-            waitforbuttonpress();
+            press_button;
             clf;
             
         end
@@ -109,7 +109,7 @@ if calibrate == 1
     text(0,6,welcometxt6,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
-    waitforbuttonpress();
+    press_button;
     clf;
     
     %%%% start running blocks %%%%
@@ -152,7 +152,7 @@ if calibrate == 1
         
         label = evt_value_cal{task(i)};
         tsk = cond_name_cal{task(i)};
-        cue = {sprintf('BLOCK %d',i),sprintf(tsk),sprintf('PAUSE \n\nIn the next block %s.\nPress the spacebar to start...',tsk), ...
+        cue = {sprintf('BLOCK %d',i),sprintf(tsk),sprintf('PAUSE \n\nIn the next block %s.\nPress button 1 to start...',tsk), ...
             sprintf('\n\nIn the next block %s.\n',tsk)};
         
         %PAUSE between blocks
@@ -164,7 +164,7 @@ if calibrate == 1
             drawnow;
             
             sendEvent('relax','pause')
-            waitforbuttonpress(); %pause period
+            press_button; %pause period
             
         else
             
@@ -292,19 +292,19 @@ set(fig,'units','pixels','MenuBar','none','color',[0 0 0]);
 text(0,6,welcometxtII_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
 text(0,6,welcometxtII_2,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
 text(0,6,welcometxtII_2_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
 switch group

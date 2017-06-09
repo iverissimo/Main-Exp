@@ -5,18 +5,18 @@
 text(0,6,welcometxtII_4,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
-waitforbuttonpress();
+press_button;
 clf;
 
  %PAUSE between blocks
-    text(5,5,sprintf('PAUSE \n\nPress the spacebar to start...'),...
+    text(5,5,sprintf('PAUSE \n\nPress button 1 to start...'),...
         'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
     axis([0 10 0 10]);
     set(gca,'visible','off');
     drawnow;
     
     sendEvent('relax','pause')
-    waitforbuttonpress(); %pause period
+    press_button; %pause period
     clf;
     
     points = 0; %counter for point system, starts with 0 for each block
