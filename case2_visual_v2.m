@@ -6,6 +6,7 @@ text(0,6,welcometxtII_3_2,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
+%waitforbuttonpress();
 clf;
 
 block0; %do example block
@@ -14,6 +15,7 @@ text(0,6,welcometxtII_5,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
+%waitforbuttonpress();
 clf;
 
 for i = 1:num_block
@@ -26,7 +28,8 @@ for i = 1:num_block
     drawnow;
     
     sendEvent('relax','pause')
-    press_button; %pause period
+    press_button;
+    %waitforbuttonpress();
     clf;
     
     points = 0; %counter for point system, starts with 0 for each block

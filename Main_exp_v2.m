@@ -36,13 +36,29 @@ if calibrate == 1
     text(0,6,welcometxt1,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
+    
+    %added this so I have time to maximize figure in subjects computer,
+    %before buffernewevents freezes my figure
+    mx = -1; %just to run while loop
+    while (mx < 0)
+        mx = input('Maximize figure in subject''s computer screen! If ready to start enter 1: ');
+        if mx == 1
+            break;
+        else
+            disp('Option not available.')
+            mx = -1;
+        end
+    end
+    
     press_button;
+    %waitforbuttonpress();
     clf;
     
     text(0,6,welcometxt2,'Color',txtColor,'FontSize',txtSize_wlc);
     axis([0 10 0 10]);
     set(gca,'visible','off');
     press_button;
+    %waitforbuttonpress();
     
     soundTest(dur_iti_cal);
     pause(1)
@@ -53,6 +69,7 @@ if calibrate == 1
     axis([0 10 0 10]);
     set(gca,'visible','off');
     press_button;
+    %waitforbuttonpress();
     clf;
     
     %instructions loop
@@ -68,6 +85,7 @@ if calibrate == 1
             axis([0 10 0 10]);
             set(gca,'visible','off');
             press_button;
+            %waitforbuttonpress();
             clf;
             
         elseif i == 3
@@ -77,6 +95,7 @@ if calibrate == 1
             axis([0 10 0 10]);
             set(gca,'visible','off');
             press_button;
+            %waitforbuttonpress();
             clf;
             
         end
@@ -110,6 +129,7 @@ if calibrate == 1
     axis([0 10 0 10]);
     set(gca,'visible','off');
     press_button;
+    %waitforbuttonpress();
     clf;
     
     %%%% start running blocks %%%%
@@ -165,7 +185,7 @@ if calibrate == 1
             
             sendEvent('relax','pause')
             press_button; %pause period
-            
+            %waitforbuttonpress();
         else
             
             text(5,5,cue{4},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -292,19 +312,36 @@ set(fig,'units','pixels','MenuBar','none','color',[0 0 0]);
 text(0,6,welcometxtII_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
+
+%added this so I have time to maximize figure in subjects computer,
+%before buffernewevents freezes my figure
+mx = -1; %just to run while loop
+while (mx < 0)
+    mx = input('Maximize figure in subject''s computer screen! If ready to start enter 1: ');
+    if mx == 1
+        break;
+    else
+        disp('Option not available.')
+        mx = -1;
+    end
+end
+
 press_button;
+%waitforbuttonpress();
 clf;
 
 text(0,6,welcometxtII_2,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
+%waitforbuttonpress();
 clf;
 
 text(0,6,welcometxtII_2_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
+%waitforbuttonpress();
 clf;
 
 switch group
@@ -316,7 +353,7 @@ switch group
     case 2 %%%%%%%%%%%%%%%%%%%  visual SMR feedback  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         case2_visual_v2;
-            
+        
     case 3 %%%%%%%%%%%%%%%%%%%  active robot control  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         case3_active_v2;
@@ -328,9 +365,9 @@ sendEvent('testing','end'); % start continuous feedback phase
 %save interesting variables
 if group == 1 || group == 3
     endSrlPort(srl); %close serial por communication
-    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','task','angle')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','angle')
 else
-    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','task')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points')
 end
 
 text(0,6,goodbyetxtII,'Color',txtColor,'FontSize',txtSize_wlc);

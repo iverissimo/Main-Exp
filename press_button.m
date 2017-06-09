@@ -1,6 +1,7 @@
 
 % script to wait for button box press (1)
 % before continuing with experiment
+pause(1);%give initial pause so MATLAB has time to set up the text display
 
 initgetwTime; %start var getwTime
 timeleft = time2press; %time to wait [s]
