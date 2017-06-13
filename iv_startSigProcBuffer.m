@@ -1,4 +1,4 @@
-function iv_startSigProcBuffer(varargin)
+function []=startSigProcBuffer(varargin)
 % buffer controlled execution of the different signal processing phases.
 %
 % Trigger events: (type,value)
@@ -125,7 +125,10 @@ if( isempty(capFile) )
     else                                   capFile=fullfile(pth,fn);
     end; % 1010 default if not selected
 end
-if(~isempty(strfind(capFile,'1010.txt')) ) overridechnms=0; else overridechnms=1; end; % force default override
+overridechnms=1; % default cap-file is wire->name+position mapping
+if ( ~isempty(strfind(capFile,'1010.txt')) || ~isempty(strfind(capFile,'subset')) )
+    overridechnms=0; % capFile is just position-info / channel-subset selection
+end;
 if ( ~isempty(strfind(capFile,'tmsi')) ) thresh=[.0 .1 .2 5]; badchThresh=1e-4; end;
 
 if ( isempty(opts.epochEventType) && opts.useGUI )
@@ -254,7 +257,7 @@ while ( true )
     % wait for a phase control event
     if ( opts.verb>0 ) fprintf('%d) Waiting for phase command\n',nsamples); end;
     [devents,state,nevents,nsamples]=buffer_newevents(opts.buffhost,opts.buffport,state,...
-        {opts.phaseEventType 'subject'},[],opts.timeout_ms);
+        {opts.phaseEventType 'subject' 'sigproc.*'},[],opts.timeout_ms);
     if ( numel(devents)==0 )
         continue;
     elseif ( numel(devents)>1 )
@@ -272,6 +275,10 @@ while ( true )
             subject=devents(di).value;
             if ( opts.verb>0 ) fprintf('Setting subject to : %s\n',subject); end;
             continue;
+        elseif ( strcmp(devents(di).type,'sigproc.reset') )
+            ; % ignore sig-proc reset
+        elseif ( strncmp(devents(di).type,'sigproc.',numel('sigproc.')) && strcmp(devents(di).value,'start') ) % start phase command
+            phaseToRun=devents(di).type(numel('sigproc.')+1:end);
         else
             phaseToRun=devents(di).value;
             break;
@@ -281,10 +288,10 @@ while ( true )
     
     fprintf('%d) Starting phase : %s\n',devents(di).sample,phaseToRun);
     if ( opts.verb>0 ) ptime=getwTime(); end;
-    sendEvent(lower(phaseToRun),'start'); % mark start/end testing
     % hide controller window while the phase is actually running
     if ( opts.useGUI && ishandle(contFig) ) set(contFig,'visible','off'); end;
     
+    sendEvent(['sigproc.' lower(phaseToRun)],'ack'); % ack-start cmd recieved
     switch lower(phaseToRun);
         
         %---------------------------------------------------------------------------------
@@ -293,15 +300,15 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'eegviewer','sigViewer'};
-            eegViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms);
+            sigViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms);
             
             %---------------------------------------------------------------------------------
         case {'erspvis','erpvis','erpviewer','erpvisptb'};
-            erpViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms,'cuePrefix',opts.erpEventType,'endType',lower(phaseToRun),'trlen_ms',opts.trlen_ms,'freqbands',[.0 .3 45 47],'maxEvents',opts.erpMaxEvents,opts.erpOpts{:});
+            erpViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms,'cuePrefix',opts.erpEventType,'endType',{lower(phaseToRun) 'sigproc.reset'},'trlen_ms',opts.trlen_ms,'freqbands',[.0 .3 45 47],'maxEvents',opts.erpMaxEvents,opts.erpOpts{:});
             
             %---------------------------------------------------------------------------------
         case {'erpviewcalibrate','erpviewercalibrate','calibrateerp'};
-            [traindata,traindevents]=erpViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms,'cuePrefix',opts.erpEventType,'endType',{{lower(phaseToRun) 'calibrate'} 'end'},'trlen_ms',opts.trlen_ms,'freqbands',[.0 .3 45 47],'maxEvents',opts.erpMaxEvents,opts.erpOpts{:});
+            [traindata,traindevents]=erpViewer(opts.buffhost,opts.buffport,'capFile',capFile,'overridechnms',overridechnms,'cuePrefix',opts.erpEventType,'endType',{{lower(phaseToRun) 'calibrate' 'sigproc.reset'} 'end'},'trlen_ms',opts.trlen_ms,'freqbands',[.0 .3 45 47],'maxEvents',opts.erpMaxEvents,opts.erpOpts{:});
             mi=matchEvents(traindevents,{'calibrate' 'calibration'},'end'); traindevents(mi)=[]; traindata(mi)=[];%remove exit event
             fname=[dname '_' subject '_' datestr];
             fprintf('Saving %d epochs to : %s\n',numel(traindevents),fname);save([fname '.mat'],'traindata','traindevents','hdr');
@@ -309,12 +316,13 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'calibrate','calibration'};
-            [traindata,traindevents,state]=buffer_waitData(opts.buffhost,opts.buffport,[],'startSet',opts.epochEventType,'exitSet',{{'calibrate' 'calibration'} 'end'},'verb',opts.verb,'trlen_ms',opts.trlen_ms,opts.calibrateOpts{:});
+            [traindata,traindevents,state]=buffer_waitData(opts.buffhost,opts.buffport,[],'startSet',opts.epochEventType,'exitSet',{{'calibrate' 'calibration' 'sigproc.reset'} 'end'},'verb',opts.verb,'trlen_ms',opts.trlen_ms,opts.calibrateOpts{:});
             mi=matchEvents(traindevents,{'calibrate' 'calibration'},'end'); traindevents(mi)=[]; traindata(mi)=[];%remove exit event
             fname=[dname '_' subject '_' datestr];
             fprintf('Saving %d epochs to : %s\n',numel(traindevents),fname);save([fname '.mat'],'traindata','traindevents','hdr');
             trainSubj=subject;
             
+            %% INES EXPERIMENT
             pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
             load(pname);
             %load('cfgcls.mat') %struct with parameters defined in Main_exp
@@ -332,9 +340,15 @@ while ( true )
                     warning(['Couldnt find a classifier to load file: ' fname]);
                     break;
                 end
+                chdr=hdr;
+                
+                %% INES EXPERIMENT
                 %load(fname);
                 cutdata_name = strcat(fname,'_cut.mat');
                 load(cutdata_name); %load cut training data
+                %%
+                
+                if( ~isempty(chdr) ) hdr=chdr; end;
                 trainSubj=subject;
             end;
             if ( opts.verb>0 ) fprintf('%d epochs\n',numel(traindevents)); end;
@@ -395,6 +409,7 @@ while ( true )
                         'capFile',capFile,'overridechnms',overridechnms,'verb',opts.verb,...
                         opts.trainOpts{:},userOpts{:});
                     
+                    %% INES EXPERIMENT
                     if exist('cfgcls.mat') ~= 1 %is not a variable in the workspace.
                         pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
                         load(pname);
@@ -422,6 +437,7 @@ while ( true )
             % msgbox({sprintf('Error in : %s',phaseToRun) 'OK to continue!'},'Error');
             % sendEvent('training','end');
             %end
+            sendEvent(lower(phaseToRun),'end'); % indicate command finished
             
             %---------------------------------------------------------------------------------
         case {'test','testing','epochfeedback','eventfeedback'};
@@ -439,7 +455,7 @@ while ( true )
             
             event_applyClsfr(clsfr,'startSet',opts.testepochEventType,...
                 'predFilt',opts.epochPredFilt,...
-                'endType',{'testing','test','epochfeedback','eventfeedback'},'verb',opts.verb,...
+                'endType',{'testing','test','epochfeedback','eventfeedback','sigproc.reset'},'verb',opts.verb,...
                 'trlen_ms',opts.trlen_ms,...%default to trlen_ms data per prediction
                 opts.epochFeedbackOpts{:}); % allow override with epochFeedbackOpts
             % 	  catch
@@ -453,6 +469,7 @@ while ( true )
             %        msgbox({sprintf('Error in : %s',phaseToRun) 'OK to continue!'},'Error');
             %        sendEvent('testing','end');
             %      end
+            
             
             %---------------------------------------------------------------------------------
         case {'contfeedback'};
@@ -474,7 +491,7 @@ while ( true )
                             fprintf('%s>%s : %d\n',le.stack(i).file,le.stack(i).name,le.stack(i).line);
                         end;
                     end
-                    msgbox({sprintf('Error in : %s',phaseToRun) 'OK to continue!'},'Error');
+                    msgbox({sprintf('%s::ERROR loading classifier, %s',phaseToRun,clsfrfile) 'OK to continue!'},'Error');
                     sendEvent('testing','end');
                 end;
             end
@@ -486,14 +503,14 @@ while ( true )
                 % generate prediction every trlen_ms/2 seconds using trlen_ms data
                 if ( ~opts.savetestdata )
                     cont_applyClsfr(clsfr,...
-                        'endType',{'testing','test','contfeedback'},...
+                        'endType',{'testing','test','contfeedback','sigproc.reset'},...
                         'predFilt',opts.contPredFilt,'verb',opts.verb,...
                         'trlen_ms',opts.trlen_ms,'overlap',.5,... %default to predict every trlen_ms/2 ms
                         opts.contFeedbackOpts{:}); % but override with contFeedbackOpts
                 else
                     [testdata,testdevents]=...
                         cont_applyClsfr(clsfr,...
-                        'endType',{'testing','test','contfeedback'},...
+                        'endType',{'testing','test','contfeedback','sigproc.reset'},...
                         'predFilt',opts.contPredFilt,'verb',opts.verb,...
                         'trlen_ms',opts.trlen_ms,'overlap',.5,... %default to predict every trlen_ms/2 ms
                         opts.contFeedbackOpts{:}); % but override with contFeedbackOpts
@@ -538,17 +555,18 @@ while ( true )
             
             if( any(strcmp(opts.userFeedbackTable{phasei,2},{'event','epoch'})) )
                 event_applyClsfr(clsfr,'startSet',opts.testepochEventType,...
-                    'endType',{'testing','test','epochfeedback','eventfeedback',lower(phaseToRun)},'verb',opts.verb,...
+                    'endType',{'testing','test','epochfeedback','eventfeedback',lower(phaseToRun),'sigproc.reset'},'verb',opts.verb,...
                     'trlen_ms',opts.trlen_ms,...
                     opts.userFeedbackTable{phasei,3}{:});
             elseif ( any(strcmp(opts.userFeedbackTable{phasei,2},'cont')) )
                 cont_applyClsfr(clsfr,...
-                    'endType',{'testing','test','contfeedback',lower(phaseToRun)},'verb',opts.verb,...
+                    'endType',{'testing','test','contfeedback',lower(phaseToRun),'sigproc.reset'},'verb',opts.verb,...
                     'trlen_ms',opts.trlen_ms,'overlap',.5,... %default to prediction every trlen_ms/2 ms
                     opts.userFeedbackTable{phasei,3}{:});
             else
                 error('UserFeedback apply-method type is unrecognised');
             end
+            sendEvent(lower(phaseToRun),'end'); % indicate command finished
             
             % 	  catch
             % 		 fprintf('Error in : %s',phaseToRun);
@@ -571,7 +589,7 @@ while ( true )
             
     end
     if ( opts.verb>0 ) fprintf('Finished : %s @ %5.3fs\n',phaseToRun,getwTime()-ptime); end;
-    sendEvent(lower(phaseToRun),'end');
+    sendEvent(['sigproc.' lower(phaseToRun)],'end');
     % show GUI again when phase has completed
     if ( opts.useGUI && ishandle(contFig) ) set(contFig,'visible','on'); end;
     
