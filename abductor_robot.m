@@ -7,10 +7,9 @@
 
 function abductor_robot(angle,srl)%,comport)
 
-sendEvent('stimulus','feedback');
 fwrite(srl,angle); % send angle numerical value to arduino
 pause(1);
 fwrite(srl,180); % send angle numerical value to arduino
-pause(1);
+pause(0.5);
 
 end

@@ -11,7 +11,7 @@ state  = []; %current state of the newevents, empty between whiles to avoid proc
 while(timeleft>0) 
     [bevents, state] = buffer_newevents(buffhost,buffport,state,'response',[],timeleft*1000); %works for any button
     
-    if strcmp(bevents.type,'response')
+    if strcmp(bevents(1).type,'response') 
         timeleft = 0; %leaves loop
     else
         timeleft = time2press - (getwTime()-tempo);

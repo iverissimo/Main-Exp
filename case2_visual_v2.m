@@ -103,9 +103,10 @@ for i = 1:num_block
             % feedback information...
             % change in points only if confident in right class
             
-            if prob >= thresh % 90% confident in positive class [rest]
+            if prob(1) >= thresh % 90% confident in positive class [rest]
+                pause(dur_feedback); %give some time between point display
                 points = points + 1;
-                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
+                sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
                 clf;
             end
             
@@ -125,7 +126,7 @@ for i = 1:num_block
             set(gca,'visible','off');
             drawnow;
             
-            timeleft = dur_trial - (getwTime()-trial_StartTime);
+            timeleft = dur_bl - (getwTime()-trial_StartTime);
             
         end
         
@@ -193,9 +194,10 @@ for i = 1:num_block
             
             % feedback information...
             % change in points only if confident in right class
-            if prob <= 1-thresh % 90% confident in negative class [abd]
+            if prob(1) <= 1-thresh % 90% confident in negative class [abd]
+                pause(dur_feedback); %give some time between point display
                 points = points + 1;
-                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
+                sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
                 clf;
             end
             

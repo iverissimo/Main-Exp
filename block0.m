@@ -92,14 +92,15 @@ for j = 1:num_trial         %run trials for block i
         % feedback information...
         % change in points only if confident in right class
         if group == 1 %sham
-            outcome = randi(2); %random outcome
-            if outcome == 1
-                %pause(dur_feedback); %give some time between point display,
+            outcome = rand(); %random outcome
+            if outcome > rnd_thresh
+                pause(dur_feedback); %give some time between point display,
                 points = points + 1;
                 clf;
             end
         else % active || visual
-            if prob >= thresh % 90% confident in positive class [rest]
+            if prob(1) >= thresh % 90% confident in positive class [rest]
+                pause(dur_feedback); %give some time between point display,
                 points = points + 1;
                 clf;
             end
@@ -121,7 +122,7 @@ for j = 1:num_trial         %run trials for block i
         set(gca,'visible','off');
         drawnow;
         
-        timeleft = dur_trial - (getwTime()-trial_StartTime);
+        timeleft = dur_bl - (getwTime()-trial_StartTime);
         
     end
     
@@ -190,16 +191,18 @@ for j = 1:num_trial         %run trials for block i
         % feedback information...
         % change in points only if confident in right class
         if group == 1 %sham
-            outcome = randi(2);%random outcome
-            if outcome == 1
+            outcome = rand();%random outcome
+            if outcome > rnd_thresh
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
                 clf;
             end
         else %active || visual
-            if prob <= 1-thresh % 90% confident in negative class [abd]
+            if prob(1) <= 1-thresh % 90% confident in negative class [abd]
                 if group == 3 %active
                     abductor_robot(angle,srl); %move to angle and return to init position
+                else
+                    pause(dur_feedback); %give some time between point display
                 end
                 points = points + 1;
                 %sendEvent('stimulus','feedback'); %need to send event?

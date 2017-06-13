@@ -32,7 +32,7 @@ txtSize_cue = 70;%50;                        %cue text size
 % to initialize connection: (omit 2nd argument if defaults apply)
 % define settings as structure with fields:
 
-bb.Device    = '/dev/tty.usbmodem14131';%'/dev/tty.usbmodem141121';
+bb.Device    = '/dev/tty.usbmodem141131';%'/dev/tty.usbmodem141121';
 bb.BaudRate  = 115200;
 bb.DataBits  = 8;
 bb.StopBits  = 1;
@@ -44,7 +44,7 @@ time2press = 10*60; % [s] wait a maximum of 10 minutes for a button press, or el
 dur_trial_cal = 5;                              %trial duration [s]
 dur_iti_cal = 3;                                % inter-trial-interval [s]
 
-num_trial_cal = 2;%3;%2;                          % number of trials in one block
+num_trial_cal = 3;                          % number of trials in one block
 num_block_cal = 3;%24;%3;                             % number of blocks
 
 cond_cal = 3;                                   % number of conditions being tested
@@ -109,7 +109,8 @@ goodbyetxt = sprintf('\nThank you! \n\nWait for more instructions regarding the 
 %% Define conditions for Part II
 dur_trial = 12;                              % move trial duration[s]
 dur_iti = 3;%4.5;                            % inter-trial-interval [s]
-dur_bl = 5;                                  % baseline trial duration [s]
+dur_bl = 6;%5;                                  % baseline trial duration [s]
+dur_feedback = 1.5;                           % feedback duration (s)
 
 num_trial = 3;%2;                          % number of trials in one block
 num_block = 6;%50;                             % number of blocks
@@ -118,11 +119,12 @@ cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
 evt_value = {'toe_abd','rest'}; %event value for type 'movement'
 num_total = num_trial*num_block;            % total number of trials
-dur_feedback = 1.5;                           % feedback duration (s)
 type = [1 2]; %type of condition, matrix of 1xcond
 end_cond = round(num_block/cond); %max number of blocks per condition
 points = 0; %performance feedback counter
 curr_points = zeros(1,num_block); %points obtained in the end of each block
+%outcome_bl = rand(num_block,round(dur_bl/dur_feedback)*num_trial); %random distribution between 0 and 1 for baseline
+rnd_thresh = 0.7;%tresh for random outcome, biased to not giving feedback
 
 %robot parameters
 comport = '/dev/tty.usbmodem141141';%'/dev/tty.usbmodem141131';%'/dev/tty.usbmodem14111'; %'COM5'; %Serial port name for arduino connection
@@ -132,13 +134,10 @@ ang_min = 0; %min angle for robot movement
 % classifier training options
 thresh = 0.9;%0.95; %threshold to reach before giving feedback
 welch_width_ms=250; % width of welch window => spectral resolution
-% trainOpts={'width_ms',welch_width_ms,'badtrrm',0,'spatialfilter','adaptspatialfilt',...
-%     'adaptspatialfiltFn',{'filtPipeline' {'rmEMGFilt',[1 2 3]}...
-%     {'artChRegress',[],{'C3' 'C4'}}},'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
 
 trainOpts={'width_ms',welch_width_ms,'badtrrm',0,'spatialfilter','adaptspatialfilt',...
     'adaptspatialfiltFn',{'filtPipeline' {'rmEMGFilt' []} ...
-    {'artChRegress',[],{'EOG' 'AFz' 'EMG' 'AF3' 'FP1' 'FPz' 'FP2' 'AF4' '1/f'}}},...
+    {'artChRegress',[],{'EXG1' 'EXG2' 'EXG3' 'EXG4' 'AFz' 'AF3' 'FP1' 'FPz' 'FP2' 'AF4' '1/f' 'EMG'}}},...
     'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
 
 welcometxtII_1 = sprintf(['\n\nWelcome to this experiment!' ...

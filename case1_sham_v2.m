@@ -101,15 +101,16 @@ for i = 1:num_block
             drawnow;
             
             %random outcome
-            outcome = randi(2);
+            % if baseline in robot conditions
+            outcome = rand();
             
             % feedback information...
             % change in points only if confident in right class
             
-            if outcome == 1
-                %pause(dur_feedback); %give some time between point display,
+            if outcome > rnd_thresh
+                pause(dur_feedback); %give some time between point display,
                 points = points + 1;
-                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
+                sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
                 clf;
             end
             
@@ -129,7 +130,7 @@ for i = 1:num_block
             set(gca,'visible','off');
             drawnow;
             
-            timeleft = dur_trial - (getwTime()-trial_StartTime);
+            timeleft = dur_bl - (getwTime()-trial_StartTime);
             
         end
         
@@ -196,14 +197,14 @@ for i = 1:num_block
             drawnow;
             
             %random outcome
-            outcome = randi(2);
+            outcome = rand();
             
             % feedback information...
             % change in points only if confident in right class
-            if outcome == 1
+            if outcome > rnd_thresh
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
-                sendEvent('feedback',pred); %send event with the feedback and corresponding dv
+                sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
                 clf;
             end
             
