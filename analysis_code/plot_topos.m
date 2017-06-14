@@ -8,7 +8,7 @@
 cfg = [];
 cfg.method = 'mtmconvol';
 cfg.output = 'pow';
-cfg.foi = 8:1:30; % analysis 8 to 30 Hz in steps of 1 Hz
+cfg.foi = 8:1:40;%30; % analysis 8 to 30 Hz in steps of 1 Hz
 cfg.taper = 'hanning';
 cfg.t_ftimwin = ones(length(cfg.foi),1).*0.5 %vector 1 x numfoi, length of time window (in seconds)
 cfg.toi = -3:0.5:0; % time window "slides" from 0 to 5 sec in steps of 0.5 sec (500 ms)
@@ -21,7 +21,7 @@ baseline.powspctrm = baseline.powspctrm(:,:,2:end); % that were NaN
 cfg = [];
 cfg.method = 'mtmconvol';
 cfg.output = 'pow';
-cfg.foi = 8:1:30; % analysis 8 to 30 Hz in steps of 1 Hz
+cfg.foi = 8:1:40;%30; % analysis 8 to 30 Hz in steps of 1 Hz
 cfg.taper = 'hanning';
 cfg.t_ftimwin = ones(length(cfg.foi),1).*0.5 %vector 1 x numfoi, length of time window (in seconds)
 cfg.toi = 0:0.5:12;%-0.1; % time window "slides" from 0 to 5 sec in steps of 0.5 sec (500 ms)
@@ -32,7 +32,7 @@ cfg.toi = 0:0.5:12;%-0.1; % time window "slides" from 0 to 5 sec in steps of 0.5
 cfg = [];
 cfg.method = 'mtmconvol';
 cfg.output = 'pow';
-cfg.foi = 8:1:30; % analysis 8 to 30 Hz in steps of 1 Hz
+cfg.foi = 8:1:40;%30; % analysis 8 to 30 Hz in steps of 1 Hz
 cfg.taper = 'hanning';
 cfg.t_ftimwin = ones(length(cfg.foi),1).*0.5 %vector 1 x numfoi, length of time window (in seconds)
 cfg.toi = 0:0.5:12;%-0.1; % time window "slides" from 0 to 5 sec in steps of 0.5 sec (500 ms)
@@ -83,6 +83,11 @@ beta_idx = [find(ERD.freq == 15) find(ERD.freq == 30)];
 ERD_beta.freq = ERD.freq(beta_idx(1):beta_idx(2));
 ERD_beta.powspctrm = ERD.powspctrm(:,beta_idx(1):beta_idx(2))
 
+ERD_gamma = ERD;
+gamma_idx = [find(ERD.freq == 30) find(ERD.freq == 40)];
+ERD_gamma.freq = ERD.freq(gamma_idx(1):gamma_idx(2));
+ERD_gamma.powspctrm = ERD.powspctrm(:,gamma_idx(1):gamma_idx(2))
+
 ERS_mu = ERS;
 mu_idx = [find(ERS.freq == 8) find(ERS.freq == 12)];
 ERS_mu.freq = ERS.freq(mu_idx(1):mu_idx(2));
@@ -92,6 +97,11 @@ ERS_beta = ERS;
 beta_idx = [find(ERS.freq == 15) find(ERS.freq == 30)];
 ERS_beta.freq = ERS.freq(beta_idx(1):beta_idx(2));
 ERS_beta.powspctrm = ERS.powspctrm(:,beta_idx(1):beta_idx(2))
+
+ERS_gamma = ERS;
+beta_idx = [find(ERS.freq == 30) find(ERS.freq == 40)];
+ERS_gamma.freq = ERS.freq(gamma_idx(1):gamma_idx(2));
+ERS_gamma.powspctrm = ERS.powspctrm(:,gamma_idx(1):gamma_idx(2))
 
 cfg = [];
 cfg.parameter = 'powspctrm';
@@ -111,10 +121,17 @@ ft_topoplotER(cfg, ERD_beta);
 figure(4)
 ft_topoplotER(cfg, ERS_beta);
 
+figure(5)
+ft_topoplotER(cfg, ERD_gamma);
+figure(6)
+ft_topoplotER(cfg, ERS_gamma);
+
 saveas(1, fullfile(pth,'topoplotER_abd_mu'),'png');
 saveas(2, fullfile(pth,'topoplotER_rest_mu'),'png');
 saveas(3, fullfile(pth,'topoplotER_abd_beta'),'png');
 saveas(4, fullfile(pth,'topoplotER_rest_beta'),'png');
+saveas(5, fullfile(pth,'topoplotER_abd_gamma'),'png');
+saveas(6, fullfile(pth,'topoplotER_rest_gamma'),'png');
 close all;
 
 % ratio_ERDS = ERD; 

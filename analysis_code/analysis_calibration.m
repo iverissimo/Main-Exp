@@ -22,6 +22,7 @@ close all;
 %sub2 - classification was 81.0%
 %sub3 - classification was 88.8%
 %sub4 - classification was 85.2%
+%sub5 - classification was 78.9%
 
 % see classifier performance and plots with data from buffer
 [data_RestvsAbd,devents_RestvsAbd,hdr_RestvsAbd,allevents_RestvsAbd]=sliceraw(fname,'startSet',{'movement' {'toe_abd' 'rest'}},'trlen_ms',5000);
@@ -73,6 +74,7 @@ close all;
 %sub2 - classification was 81.7%
 %sub3 - classification was 88.8%
 %sub4 - classification was 85.2%
+%sub5 - classification was 78.9%
 
 %Abduction vs Flexion
 [clsfr_FlexvsAbd,res_FlexvsAbd,X_FlexvsAbd,Y_FlexvsAbd]=buffer_train_ersp_clsfr(data_FlexvsAbd,devents_FlexvsAbd,hdr_FlexvsAbd,...
@@ -88,3 +90,5 @@ close all;
 %sub2 - classification was 62.2%
 %sub3 - classification was 84.7%
 %sub4 - classification was 69.6%
+%sub5 - classification was 62.7%
+

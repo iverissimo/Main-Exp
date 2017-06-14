@@ -14,13 +14,14 @@ ft_defaults; % makes sure all fieldtrip paths are correct
 datadir = {'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject1_test/1557/raw_buffer/0001',...
     'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject2_test/1445/raw_buffer/0001',...
     'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject3_test/1949/raw_buffer/0001',...
-    'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject4_test/1920/raw_buffer/0001'};
+    'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject4_test/1920/raw_buffer/0001',...
+    'D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject5_test/1951/raw_buffer/0001'};
 
 load_data = {'training_data_test_170508','training_data_test_170512','training_data_test_170524',...
-    'training_data_test_170531'};
+    'training_data_test_170531','training_data_test_170612'};
 type_tsk = {'visual','active','sham'};
 
-subjnum = 3; %number of subject to be analised
+subjnum = 5; %number of subject to be analised
 fname = datadir{subjnum};
 % get the directory which contains the files
 if (isdir(fname))
@@ -102,14 +103,14 @@ data_trials = ft_preprocessing(cfg,data_trials);
 
 %% Reject channels
 % reject channels with std > 3
-[data_trials,info,freq] = iv_rejectBadChannels(data_trials,[],0,1); %altered Karen's function
+[data_trials,info,freq] = iv_rejectBadChannels(data_trials,[],0,0);%1); %altered Karen's function
 
 %% Filtering
 %use CAR and BP filter (default type is butterworth)
 %want to focus on mu [8 13] and beta [15 30] frequencies
 cfg = [];
 cfg.bpfilter = 'yes'; % bandpass filter
-cfg.bpfreq = [8 30];%[8 30]; %bandpass frequency range, specified as [low high] in Hz
+cfg.bpfreq = [8 40];%[8 30]; %bandpass frequency range, specified as [low high] in Hz
 cfg.bpfiltord = 6; %bandpass filter order
 data_trials = ft_preprocessing(cfg,data_trials);
 
@@ -134,7 +135,7 @@ num_trl = 3; %number of trials per block
 [trl_abd] = bl2trl(class_abd,num_trl);
 [trl_rst] = bl2trl(class_rest,num_trl);
 
-    if exist('info.rejectedTrials') == 0 || isempty(info.rejectedTrials) %if no trials were rejected
+    if isfield(info,'rejectedTrials') == 0 || isempty(info.rejectedTrials) %if no trials were rejected
         
         cfg = [];
         cfg.trials = trl_abd; %selection given as a 1xN vector (default = 'all')
