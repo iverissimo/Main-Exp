@@ -14,9 +14,9 @@ load(dt{1});
     'badchrm',1,'badchthresh',3.5,'badtrrm',1,'badtrthresh',3,'visualize',1,...
     'detrend',1,'spatialfilter','car','width_ms',250,'freqband',[8 30]);
 
-saveas(1, fullfile(pth, sprintf('ersp_load')), 'png');
-saveas(2, fullfile(pth, sprintf('auc_load')), 'png');
-saveas(3, fullfile(pth, sprintf('confusion_load')), 'png');
+saveas(2, fullfile(pth, sprintf('ersp_load')), 'png');
+saveas(3, fullfile(pth, sprintf('auc_load')), 'png');
+saveas(4, fullfile(pth, sprintf('confusion_load')), 'png');
 close all;
 %sub1 - classification was 89.1%
 %sub2 - classification was 81.0%
@@ -61,14 +61,14 @@ else
 end
 
 %Rest vs Abduction
-[clsfr_RestvsAbd,res_RestvsAbd,X_RestvsAbd,Y_RestvsAbd]=buffer_train_ersp_clsfr(data_RestvsAbd,devents_RestvsAbd,hdr_RestvsAbd,...
+[clsfr_RestvsAbd,res_RestvsAbd,X_RestvsAbd,Y_RestvsAbd ]=buffer_train_ersp_clsfr(data_RestvsAbd,devents_RestvsAbd,hdr_RestvsAbd,...
     'capFile','cap_conf_ines64ch','overridechnms',1,...
     'badchrm',1,'badchthresh',3.5,'badtrrm',1,'badtrthresh',3,'visualize',1,...
     'detrend',1,'spatialfilter','car','width_ms',250,'freqband',[8 30]);
 
-saveas(1, fullfile(pth, sprintf('ersp_RAcalib_buffer')), 'png');
-saveas(2, fullfile(pth, sprintf('auc_RAcalib_buffer')), 'png');
-saveas(3, fullfile(pth, sprintf('confusion_RAcalib_buffer')), 'png');
+saveas(2, fullfile(pth, sprintf('ersp_RAcalib_buffer')), 'png');
+saveas(3, fullfile(pth, sprintf('auc_RAcalib_buffer')), 'png');
+saveas(4, fullfile(pth, sprintf('confusion_RAcalib_buffer')), 'png');
 close all;
 %sub1 - classification was 89.2%
 %sub2 - classification was 81.7%
@@ -82,9 +82,9 @@ close all;
     'badchrm',1,'badchthresh',3.5,'badtrrm',1,'badtrthresh',3,'visualize',1,...
     'detrend',1,'spatialfilter','car','width_ms',250,'freqband',[8 30]);
 
-saveas(1, fullfile(pth, sprintf('ersp_FAcalib_buffer')), 'png');
-saveas(2, fullfile(pth, sprintf('auc_FAcalib_buffer')), 'png');
-saveas(3, fullfile(pth, sprintf('confusion_FAcalib_buffer')), 'png');
+saveas(2, fullfile(pth, sprintf('ersp_FAcalib_buffer')), 'png');
+saveas(3, fullfile(pth, sprintf('auc_FAcalib_buffer')), 'png');
+saveas(4, fullfile(pth, sprintf('confusion_FAcalib_buffer')), 'png');
 close all;
 %sub1 - classification was 73.7%
 %sub2 - classification was 62.2%
