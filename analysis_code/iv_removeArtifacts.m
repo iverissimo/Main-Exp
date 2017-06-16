@@ -1,4 +1,4 @@
-function [data, info] = iv_removeArtifacts(data, amplitude_threshold, important_channels,num_ch)
+function [data, info] = iv_removeArtifacts(data, amplitude_threshold, important_channels,num_ch,pc)
 %   remove any remaining artifacts, by either locally repairing channels in problematic trials, or rejecting the trial outright 
 %
 %   [data, info] = removeArtifacts(data, amplitude_threshold, importantChannels)
@@ -28,8 +28,8 @@ cfg.channel  = data.label;
 cfg.layout = 'biosemi64.lay';
 lay = ft_prepare_layout(cfg);
 
-%nb = open('~/bci_code/external_toolboxes/fieldtrip/template/neighbours/biosemi64_neighb.mat');
-nb = open('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/fieldtrip-20161107/template/neighbours/biosemi64_neighb.mat');
+if pc == 1 nb = open('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/fieldtrip-20161107/template/neighbours/biosemi64_neighb.mat');
+else nb = open('~/bci_code/external_toolboxes/fieldtrip/template/neighbours/biosemi64_neighb.mat'); end
 neighbours = nb.neighbours;     % fix the format
 
 % using a threshold (any trial in any electrode exceeds 50 microvolts)

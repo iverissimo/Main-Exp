@@ -4,6 +4,11 @@
 
 clear all; close all;
 
+%%%%%%%%%% intial parameters%%%%%%%%%%%%
+doplot = 0; %plot prediction values (1)
+keepch = 0; % keep central channels (1)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 pc = -1; %just to run while loop
 while (pc < 0)
     pc = input('Laptop(1) or Lab3 computer(2)? \nAnswer:');
@@ -14,6 +19,9 @@ while (pc < 0)
         pc = -1;
     end
 end
+
+subjnum = input('Subject number: '); %number of subject to be analised
+type_tsk = {'visual','active','sham'};
 
 if pc == 1
     % % % Add path
@@ -31,9 +39,7 @@ if pc == 1
     
     load_data = {'training_data_test_170508','training_data_test_170512','training_data_test_170524',...
         'training_data_test_170531','training_data_test_170612'};
-    type_tsk = {'visual','active','sham'};
     
-    subjnum = 5; %number of subject to be analised
     fname = datadir{subjnum};
     % get the directory which contains the files
     if (isdir(fname))
@@ -54,25 +60,23 @@ else
     addpath(genpath('/Users/s4831829/Main Exp'));
     addpath(genpath('/Users/s4831829/buffer_bci'));
     addpath(genpath('/Users/s4831829/bci_code/external_toolboxes/fieldtrip'));
-    addpath(genpath('/Users/s4831829/bci_code/toolboxes/numerical_tools'));
-    addpath(genpath('/Users/s4831829/bci_code/toolboxes/jf_bci'));
-    addpath(genpath('/Users/s4831829/bci_code/toolboxes/utilities'));
+    addpath(genpath('/Users/s4831829/bci_code/toolboxes'));
+    rmpath(genpath('/Users/s4831829/bci_code/toolboxes/brainstream'));
     addpath(genpath('/Users/s4831829/output'));
-
+    
     ft_defaults; % makes sure all fieldtrip paths are correct
-
-     % directory for header, events and samples files
+    
+    % directory for header, events and samples files
     datadir = {'[]',...
         '[]',...
         '[]',...
         '[]',...
-        '/Users/s4831829/output/test/170612/1951/raw_buffer/0001'};
+        '/Users/s4831829/output/test/170612/1951/raw_buffer/0001',...
+        '/Users/s4831829/output/test/170614/1535/raw_buffer/0001'};
     
     load_data = {'training_data_test_170508','training_data_test_170512','training_data_test_170524',...
-        'training_data_test_170531','training_data_test_170612'};
-    type_tsk = {'visual','active','sham'};
+        'training_data_test_170531','training_data_test_170612', 'training_data_test_170615'};
     
-    subjnum = 5; %number of subject to be analised
     fname = datadir{subjnum};
     % get the directory which contains the files
     if (isdir(fname))
@@ -106,7 +110,7 @@ analysis_calibration;
 
 %% Actual experiment
 
-[ind_starttest] = analysis_mainpredvalues_v2(all_events,hdr,calib,pc,subjnum,pth);
+[ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth);
 
 %% Analyse data
 cfg = [];
@@ -122,10 +126,10 @@ cfg.event = cfg.event(ind_starttest(end):end); %only look at real experiment dat
 fst_smp = all_events(ind_starttest(end)).sample;
 
 k=1;
-if fst_smp>cfg.trl(1)     
+if fst_smp>cfg.trl(1)
     for i = 1:length(cfg.trl)
-        if fst_smp<cfg.trl(i) 
-            mtx(k,1:3) = cfg.trl(i,:); 
+        if fst_smp<cfg.trl(i)
+            mtx(k,1:3) = cfg.trl(i,:);
             k = k+1;
         end
     end
@@ -157,6 +161,7 @@ data = ft_preprocessing(cfg,data_sliced);
 
 %% Remove EOG
 % EXT 1-4 are EOG
+if pc == 2; rmpath(genpath('/Users/s4831829/buffer_bci')); end; %remove buffer bci from path in lab3, to avoid artChRegress confusion
 cfg = [];
 eog_ch = {'EXG1','EXG2','EXG3','EXG4'}; %eog channels
 data1 = subtractEOG(data,eog_ch);
@@ -165,11 +170,11 @@ data1 = subtractEOG(data,eog_ch);
 cfg.channel = ft_channelselection({'all','-EXG*'}, hdr.label);%s); %only eeg channels
 cfg.dftfilter ='yes'; %line noise removal using discrete fourier transform
 cfg.detrend = 'yes'; %remove linear trend from the data (done per trial)
-data_trials = ft_preprocessing(cfg,data1);
+data2 = ft_preprocessing(cfg,data1);
 
 %% Reject channels
 % reject channels with std > 3
-[data_trials,info,freq] = iv_rejectBadChannels(data_trials,[],0,0);%1); %altered Karen's function
+[data3,info,freq] = iv_rejectBadChannels(data2,[],0,keepch);
 
 %% Filtering
 %use CAR and BP filter (default type is butterworth)
@@ -178,7 +183,7 @@ cfg = [];
 cfg.bpfilter = 'yes'; % bandpass filter
 cfg.bpfreq = [8 40];%[8 30]; %bandpass frequency range, specified as [low high] in Hz
 cfg.bpfiltord = 6; %bandpass filter order
-data_trials = ft_preprocessing(cfg,data_trials);
+data4 = ft_preprocessing(cfg,data3);
 
 %compute common average reference
 cfg = [];
@@ -187,41 +192,30 @@ cfg.refmethod = 'avg'; % or 'median'
 cfg.reref = 'yes';
 cfg.refchannel = 'all'; %average over all EEG channels
 
-data_trials = ft_preprocessing(cfg,data_trials);
+data4 = ft_preprocessing(cfg,data4);
 
 
 %% Remove Artifacts (trial-rejection )
-num_ch = length(data_trials.label);
-[data_trials, info] = iv_removeArtifacts(data_trials,[],[],num_ch); %altered Karen's function
+num_ch = length(data4.label);
+[data5, info] = iv_removeArtifacts(data4,[],[],num_ch,pc);
 
 %% Redefine trials, according to class
 
-%save trial number per condition
-num_trl = 3; %number of trials per block
-[trl_abd] = bl2trl(class_abd,num_trl);
-[trl_rst] = bl2trl(class_rest,num_trl);
+cfg = [];
+cfg.toilim = [7.5 19.5] %cut out a time window of interest in seconds
+data_abd = ft_redefinetrial(cfg, data5); %that is common in all trials
 
-if isfield(info,'rejectedTrials') == 0 || isempty(info.rejectedTrials) %if no trials were rejected
-    
-    cfg = [];
-    cfg.trials = trl_abd; %selection given as a 1xN vector (default = 'all')
-    data_abd = ft_redefinetrial(cfg, data_trials);
-    
-    cfg = [];
-    cfg.trials = trl_rst; %selection given as a 1xN vector (default = 'all')
-    data_rest = ft_redefinetrial(cfg, data_trials);
-    
-else
-    error('Not coded yet')
-    %%%%%%%%%%%%%%% FALTA C?DIGO PARA ESTES CASOS %%%%%%%%%%%%%%%%%%%%%%%%
-end
+cfg = [];
+cfg.toilim = [0 6] %cut out a time window of interest in seconds
+data_rest = ft_redefinetrial(cfg, data5);%that is common in all trials
 
-
-
-%% Visualize
+% % % % % % % % % % % % % % % % % % % % %
+%%              VISUALIZE DATA
+% % % % % % % % % % % % % % % % % % % % %
 %% plot the event-related potentials, event-related fields
 %  or oscillatory activity (power or coherence) versus frequency. Multiple
 %  datasets can be overlayed.
+
 cfg = [];
 cfg.method = 'mtmfft';
 cfg.output = 'pow';    % return the power-spectra, jason said to use log/dB but not possible in fieldtrip
@@ -231,24 +225,58 @@ cfg.foilim = [8 30]; % [begin end] frequency band of interest
 [datafreq_rest] = ft_freqanalysis(cfg, data_rest);
 [datafreq_toeabd] = ft_freqanalysis(cfg, data_abd);
 
-cfg = [];
-cfg.parameter = 'powspctrm';
-cfg.layout = 'biosemi64.lay';
-cfg.showlabels = 'yes';
+%% Powerspectra
+%can't do multiplotER, data has different lengths
+%plot for 20 chnls like in log transform
+
+ch_cent = {'FC3','FC1','FCz','FC2','FC4',...
+    'C3','C1','Cz','C2','C4',...
+    'CP3','CP1','CPz','CP2','CP4',...
+    'P3','P1','Pz','P2','P4'}; %central/motorstrip chn
+
+lbls = datafreq_rest.label(:) %all channel labels (after preproc, so can be < 64)
+
+for i = 1:length(ch_cent)
+    for j = 1:length(lbls)
+        if strcmp(lbls{j},ch_cent{i}) == 1
+            ch_ind(i) = j; %save indexes of interest
+        end
+    end
+end
+mxpow = max([max(max(datafreq_toeabd.powspctrm)) max(max(datafreq_rest.powspctrm))]); %max power
 
 figure
-ft_multiplotER(cfg,datafreq_rest,datafreq_toeabd);
-saveas(gca, fullfile(pth,'multiplotER_RA'),'png');
-close all;
+for i = 1:20
+    subplot(4,5,i);
+    if ch_ind(i)~= 0
+        a = plot(datafreq_toeabd.freq,datafreq_toeabd.powspctrm(ch_ind(i),:))
+        hold on
+        b = plot(datafreq_rest.freq,datafreq_rest.powspctrm(ch_ind(i),:))
+        legend([a b],'abd','rest');
+        title(sprintf('Power Spectrum for %s',ch_cent{i}))
+        xlabel('Frequency [Hz]')
+        ylabel('Power')
+        ylim([0 mxpow])
+    end
+end
 
-cfg = [];
-cfg.parameter = 'powspctrm';
-cfg.layout = 'biosemi_20ch.lay';%'biosemi64.lay';
-cfg.showlabels = 'yes';
+warning(sprintf('Have to manually save fig!'));
+if keepch == 1 nam = 'powerspectra_20ch_allch';
+else  nam = 'powerspectra_20ch'; end;
 
-figure
-ft_multiplotER(cfg,datafreq_rest,datafreq_toeabd);
-saveas(gca, fullfile(pth,'multiplotER_20ch_RA'),'png');
+stahp = -1; %just to run while loop
+while (stahp < 0)
+
+    stahp = input('Please maximize fig. \nEnter 1 to continue: ');
+    if stahp == 1
+        break;
+    else
+        disp('Option not available.')
+        stahp = -1;
+    end
+end
+
+saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
 close all;
 
 %% Try to do a log transform of the power
@@ -258,25 +286,13 @@ datafreq_rest_log.powspctrm = 10*log10(datafreq_rest_log.powspctrm);
 datafreq_toeabd_log = datafreq_toeabd;
 datafreq_toeabd_log.powspctrm =10*log10(datafreq_toeabd_log.powspctrm);
 
-ch_cent = {'FC3','FC1','FCz','FC2','FC4',...
-    'C3','C1','Cz','C2','C4',...
-    'CP3','CP1','CPz','CP2','CP4',...
-    'P3','P1','Pz','P2','P4'}; %central/motorstrip chn
-lbl = datafreq_rest.label(:) %all channel labels
-
-for i = 1:length(ch_cent)
-    for j = 1:length(datafreq_rest.label)
-        if strcmp(lbl{j},ch_cent{i}) == 1
-            ch_ind(i) = j; %save indexes of interest
-        end
-    end
-end
+mxpow_log = max([max(max(datafreq_toeabd_log.powspctrm)) max(max(datafreq_rest_log.powspctrm))]); %max power
+mnpow_log = min([min(min(datafreq_toeabd_log.powspctrm)) min(min(datafreq_rest_log.powspctrm))]); %max power
 
 figure
 for i = 1:20
     subplot(4,5,i);
-    if ch_ind(i)==0
-    else
+    if ch_ind(i)~= 0
         a = plot(datafreq_toeabd_log.freq,datafreq_toeabd_log.powspctrm(ch_ind(i),:))
         hold on
         b = plot(datafreq_rest_log.freq,datafreq_rest_log.powspctrm(ch_ind(i),:))
@@ -284,125 +300,63 @@ for i = 1:20
         title(sprintf('Power Spectrum for %s',ch_cent{i}))
         xlabel('Frequency [Hz]')
         ylabel('Log Power [dB]')
+        ylim([mnpow_log mxpow_log])
     end
 end
-warning(sprintf('Have to manually save fig!\n Save as "powerspectra_log_20ch"'));
 
-%saveas(gca, fullfile(pth,'powerspectra_log_20ch'),'png'); %issue when saving, should expand image
-%close all;
+warning(sprintf('Have to manually save fig!'));
+if keepch == 1 nam = 'powerspectra_log_20ch_allch';
+else  nam = 'powerspectra_log_20ch'; end;
 
-%% TIME- FREQUENCY
-%MTMCONVOL performs time-frequency analysis on any time series trial
-%data using the 'multitaper method'
-cfg = [];
-cfg.method = 'mtmconvol';
-cfg.output = 'pow';
-cfg.foi = 8:1:30; % analysis 8 to 30 Hz in steps of 1 Hz
-cfg.taper = 'hanning';
-cfg.t_ftimwin = ones(length(cfg.foi),1).*0.5 %vector 1 x numfoi, length of time window (in seconds)
-cfg.toi = -3:0.5:15;%-3:0.5:15; %-2:0.5:8;%0:0.5:5; % time window "slides" from 0 to 5 sec in steps of 0.5 sec (500 ms)
+stahp = -1; %just to run while loop
+while (stahp < 0)
 
-[datafreq_rest2] = ft_freqanalysis(cfg, data_rest);
-[datafreq_toeabd2] = ft_freqanalysis(cfg, data_abd);
+    stahp = input('Please maximize fig. \nEnter 1 to continue: ');
+    if stahp == 1
+        break;
+    else
+        disp('Option not available.')
+        stahp = -1;
+    end
+end
 
-%plots the time-frequency representations of power
-%in a topographical layout.
-cfg = [];
-cfg.layout = 'biosemi64.lay';
-cfg.parameter = 'powspctrm'; %field to be represented as color
-%cfg.maskstyle = 'saturation';
-cfg.baseline = [-3 -0.1]; %(default = 'no'), see FT_FREQBASELINE
-cfg.baselinetype = 'absolute'; %'relative', 'relchange' or 'db' (default = 'absolute')
-cfg.showlabels = 'yes';
-cfg.box = 'yes';
-cfg.colorbar = 'yes';
-cfg.zlim = [-1 1];
-cfg.colormap = ikelvin(256);
+saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
+close all;
 
-figure
-ft_multiplotTFR(cfg, datafreq_toeabd2);
-saveas(gca, fullfile(pth,'multiplotTFR_abd'),'png');
-close all
-
-figure
-ft_multiplotTFR(cfg, datafreq_rest2);
-saveas(gca, fullfile(pth,'multiplotTFR_rest'),'png');
-close all
-
-%% try out with more central capfile
-cfg = [];
-cfg.layout = 'biosemi_20ch.lay';
-cfg.parameter = 'powspctrm'; %field to be represented as color
-%cfg.maskstyle = 'saturation';
-cfg.baseline = [-3 -0.1]; %(default = 'no'), see FT_FREQBASELINE
-cfg.baselinetype = 'absolute'; %'relative', 'relchange' or 'db' (default = 'absolute')
-cfg.showlabels = 'yes';
-cfg.box = 'yes';
-cfg.colorbar = 'yes';
-cfg.zlim = [-1 1];
-cfg.colormap = ikelvin(256);
-
-figure
-ft_multiplotTFR(cfg, datafreq_toeabd2);
-saveas(gca, fullfile(pth,'multiplotTFR_20ch_abd'),'png');
-close all
-
-figure
-ft_multiplotTFR(cfg, datafreq_rest2);
-saveas(gca, fullfile(pth,'multiplotTFR_20ch_rest'),'png');
-close all
-
-%% relevant channels in motor strip (for toe movement)
-cfg = [];
-cfg.baseline     = [-3 -0.1];
-cfg.baselinetype = 'absolute';
-cfg.maskstyle    = 'saturation'
-cfg.showlabels = 'yes';
-cfg.colorbar = 'yes';
-cfg.channel = 'FCz';
-cfg.zlim = [-1 1];
-cfg.colormap = ikelvin(256);
-% Blue = ones(101,3);
-% Red = ones(101,3);
-% Blue(:,3) = 1:-0.01:0;
-% Red(:,1) = 0:0.01:1;
-% colormap = [Red(1:end-1,:); Blue];
-% cfg.colormap     = colormap;
-
-figure
-ft_singleplotTFR(cfg, datafreq_toeabd2);
-saveas(gca, fullfile(pth,'TFR_FCz_abd'),'png');
-close all
-
-figure
-ft_singleplotTFR(cfg, datafreq_rest2);
-saveas(gca, fullfile(pth,'TFR_FCz_rest'),'png');
-close all
-
-cfg.channel = 'Cz';
-figure
-ft_singleplotTFR(cfg, datafreq_toeabd2);
-saveas(gca, fullfile(pth,'TFR_Cz_abd'),'png');
-close all
-
-figure
-ft_singleplotTFR(cfg, datafreq_rest2);
-saveas(gca, fullfile(pth,'TFR_Cz_rest'),'png');
-close all
-
-cfg.channel = 'CPz';
-figure
-ft_singleplotTFR(cfg, datafreq_toeabd2);
-saveas(gca, fullfile(pth,'TFR_CPz_abd'),'png');
-close all
-
-figure
-ft_singleplotTFR(cfg, datafreq_rest2);
-saveas(gca, fullfile(pth,'TFR_CPz_rest'),'png');
-close all
 
 %% Topo distribution of powerspectra similar to Eliana's paper
-%plot the topographic distribution of 2-Dimensional datatypes, for mu and
-%beta bands
+%plot the topographic distribution of 2-Dimensional datatypes, for mu and beta bands
 
 plot_topos;
+
+%% multiplotER of the ERD?
+% powerspectra of abdduction after normalizing by baseline
+cfg = [];
+cfg.parameter = 'powspctrm';
+cfg.layout = 'biosemi64.lay';
+cfg.showlabels = 'yes';
+
+figure
+ft_multiplotER(cfg,ERD);
+if keepch == 1 saveas(gca, fullfile(pth,'multiplotER_ERD_allch'),'png');
+else saveas(gca, fullfile(pth,'multiplotER_ERD'),'png'); end
+close all;
+
+cfg = [];
+cfg.parameter = 'powspctrm';
+cfg.layout = 'biosemi_20ch.lay';%'biosemi64.lay';
+cfg.showlabels = 'yes';
+
+figure
+ft_multiplotER(cfg,ERD);
+if keepch == 1 saveas(gca, fullfile(pth,'multiplotER_20ch_ERD_allch'),'png');
+else saveas(gca, fullfile(pth,'multiplotER_20ch_ERD'),'png'); end
+close all;
+
+
+%% TIME- FREQUENCY
+
+TFR_nobase; %TFR plots without baseline subtraction, for both conditions
+
+TFR_basesubtraction; %TFR plots with baseline subtraction, only for movement
+
