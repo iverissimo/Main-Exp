@@ -76,6 +76,8 @@ for i = 1:num_block
                     
                     pred = pred + ev.value; %accumulate decision values
                     
+                    %pred=pred+randn(1)*.1;
+
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
                     
@@ -83,7 +85,7 @@ for i = 1:num_block
                     
                 end
             end
-            
+                        
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -172,6 +174,8 @@ for i = 1:num_block
                     ev=events(si(ei));% event to process
                     
                     pred = pred + ev.value; %accumulate decision values
+                    
+                    %pred=pred+randn(1)*.1;
                     
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)

@@ -35,9 +35,7 @@ for j = 1:num_trial         %run trials for block i
     drawnow;
     
     soundTest(dur_iti); %iti period (beeps)
-    
-    %sendEvent('trial','start');
-    
+        
     %%%%%% Baseline period %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     initgetwTime; %start var getwTime
@@ -52,7 +50,6 @@ for j = 1:num_trial         %run trials for block i
     while(timeleft>0) %will run until baseline trial time is over
         
         %%%%%%%%% receive classification outcome %%%%%%%%%%%%
-        
         % wait for new prediction events to process *or* end of trial time
         [events,state,nsamples,nevents] = buffer_newevents(buffhost,buffport,state,'classifier.prediction',[],timeleft*1000);
         if ( isempty(events) )
@@ -91,7 +88,7 @@ for j = 1:num_trial         %run trials for block i
         
         % feedback information...
         % change in points only if confident in right class
-        if group == 1 %sham
+        if group ~= 1 %sham
             outcome = rand(); %random outcome
             if outcome > rnd_thresh
                 pause(dur_feedback); %give some time between point display,
@@ -126,7 +123,6 @@ for j = 1:num_trial         %run trials for block i
         
     end
     
-    %sendEvent('baseline','end');
     sound_endtrl; %trial end beep
     clf;
     
@@ -146,9 +142,7 @@ for j = 1:num_trial         %run trials for block i
     state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
     pred = 0; %reset decision values between trials
     prob = 0;
-    
-    %sendEvent('move','start');
-    
+        
     while(timeleft>0) %will run until trial time is over
         
         %%%%%%%%% receive classification outcome %%%%%%%%%%%%
@@ -172,6 +166,7 @@ for j = 1:num_trial         %run trials for block i
             end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
@@ -231,8 +226,6 @@ for j = 1:num_trial         %run trials for block i
     end
     sound_endtrl; %trial end beep
     clf;
-    %sendEvent('move','end');
-    %sendEvent('trial','end');
     pause(dur_feedback); %pause 1.5 second so beeps don't overlap
     
 end
