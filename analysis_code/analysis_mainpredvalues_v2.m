@@ -1,4 +1,4 @@
-function [ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth)
+function [ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth,type_tsk)
 
 % script to select actual test data (from main phase)
 % define start of trial, block, iti, etc
@@ -158,13 +158,67 @@ if doplot == 1 %do plots
     
     
     if pc == 1
-        pth2 = sprintf('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/sub%d_main_%s',subjnum,type_tsk{w});
+        pth2 = sprintf('C:/Users/Inês/Main-Exp/troubleshooting/sub%d_main_%s',subjnum,type_tsk{w});
     else
         pth2 = sprintf('/Users/s4831829/output/plots&&others/sub%d',subjnum);
     end
     
     subvar = sprintf('sub%d_info.mat',subjnum); %variables saved from experiment
     load(fullfile(pth2,subvar)); %loads points obtained in each block and order of tasks presented
+    
+    % plot points per block 
+    
+    figure
+    bar(curr_points,'FaceColor',[0.46 0.139 0.87])
+    title('Total Points per Block')
+    xlabel('Block Number')
+    ylabel('Points')
+    xlim([0 length(en_blk_events)+1]);
+    saveas(gca, fullfile(pth,'points_per_block'),'png');
+    close all;
+    
+    % plot points per class
+    
+    if subjnum > 6
+        
+        if subjnum == 7
+            nbl = zeros(length(en_blk_events),3);
+            nbl(:,1) = bl_points(1:length(en_blk_events),1);
+            nbl(:,2) = bl_points(1:length(en_blk_events),2)-(bl_points(1:length(en_blk_events),1)+abd_points(1:length(en_blk_events),1));
+            nbl(:,3) = bl_points(1:length(en_blk_events),3)-(bl_points(1:length(en_blk_events),1)+abd_points(1:length(en_blk_events),1));
+            bl_points = nbl;
+            abd_points = abd_points(1:length(en_blk_events),:);
+        end
+        
+        figure
+        ta = bar(abd_points,'FaceColor',[0.9 0.9 0])
+        hold on
+        tq = bar(bl_points,'FaceColor',[0 .6 .6])
+        title('Points per trial')
+        xlabel('Block Number')
+        ylabel('Points')
+        xlim([0 length(en_blk_events)+1]);
+        legend([ta tq],'toe abd','rest');
+        saveas(gca, fullfile(pth,'points_per_trl_bothtasks'),'png');
+        close all;
+        
+        soma_points_bl = sum(bl_points,2);
+        soma_points_abd = sum(abd_points,2);
+        
+        figure
+        ta2 = bar(soma_points_abd,'FaceColor',[0.9 0.9 0])
+        hold on
+        tq2 = bar(soma_points_bl,'FaceColor',[0 .6 .6])
+        title('Points per block')
+        xlabel('Block Number')
+        ylabel('Points')
+        xlim([0 length(en_blk_events)+1]);
+        legend([ta2 tq2],'toe abd','rest');
+        saveas(gca, fullfile(pth,'points_per_blk_bothtasks'),'png');
+        close all;
+        
+    end
+    
     
     % get sample number for 1st prediction in each trial
     for i = 1:length(st_trl_events)

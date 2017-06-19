@@ -5,7 +5,7 @@
 clear all; close all;
 
 %%%%%%%%%% intial parameters%%%%%%%%%%%%
-doplot = 0; %plot prediction values (1)
+doplot = 1; %plot prediction values (1)
 keepch = 0; % keep central channels (1)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -25,20 +25,21 @@ type_tsk = {'visual','active','sham'};
 
 if pc == 1
     % % % Add path
-    mfiledir=fileparts(mfilename('fullpath'));
-    addpath(genpath(fullfile(mfiledir,'..','..','..')));
+    addpath(genpath('C:/Users/Inês/Main-Exp'));
+    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/buffer_bci'));
+    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/fieldtrip-20161107'));
+    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/bci_code'));
     
     ft_defaults; % makes sure all fieldtrip paths are correct
     
     % directory for header, events and samples files
-    datadir = {'D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject1_test/1557/raw_buffer/0001',...
-        'D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject2_test/1445/raw_buffer/0001',...
-        'D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject3_test/1949/raw_buffer/0001',...
-        'D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject4_test/1920/raw_buffer/0001',...
-        'D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/troubleshooting/subject5_test/1951/raw_buffer/0001'};
+    datadir = {[],[],[],[]...
+        'C:/Users/Inês/Main-Exp/troubleshooting/subject5_test/1951/raw_buffer/0001',...
+        'C:/Users/Inês/Main-Exp/troubleshooting/subject6_test/170614/1535/raw_buffer/0001',...
+        'C:/Users/Inês/Main-Exp/troubleshooting/subject7_test/1613/raw_buffer/0001'};
     
-    load_data = {'training_data_test_170508','training_data_test_170512','training_data_test_170524',...
-        'training_data_test_170531','training_data_test_170612'};
+    load_data = {[],[],[],[],...
+        'training_data_test_170612','training_data_test_170614','training_data_test_170619'};
     
     fname = datadir{subjnum};
     % get the directory which contains the files
@@ -51,7 +52,7 @@ if pc == 1
         end
     end
     
-    pth = sprintf('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/Main Exp/plots/sub%d',subjnum);
+    pth = sprintf('C:/Users/Inês/Main-Exp/plots/sub%d',subjnum);
     mkdir(pth) %folder to save plots for specific subject
     
 else
@@ -106,11 +107,11 @@ calib = 0;
 
 %% CALIBRATION
 % no need to run this everytime
-analysis_calibration;
+%analysis_calibration;
 
 %% Actual experiment
 
-[ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth);
+[ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth,type_tsk);
 
 %% Analyse data
 cfg = [];
@@ -161,7 +162,8 @@ data = ft_preprocessing(cfg,data_sliced);
 
 %% Remove EOG
 % EXT 1-4 are EOG
-if pc == 2; rmpath(genpath('/Users/s4831829/buffer_bci')); end; %remove buffer bci from path in lab3, to avoid artChRegress confusion
+if pc == 2; rmpath(genpath('/Users/s4831829/buffer_bci')); 
+else rmpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/buffer_bci')); end; %remove buffer bci from path in lab3, to avoid artChRegress confusion
 cfg = [];
 eog_ch = {'EXG1','EXG2','EXG3','EXG4'}; %eog channels
 data1 = subtractEOG(data,eog_ch);
@@ -276,8 +278,8 @@ while (stahp < 0)
     end
 end
 
-saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
-close all;
+%saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
+%close all;
 
 %% Try to do a log transform of the power
 % is this PSD then [dB]?
@@ -320,8 +322,8 @@ while (stahp < 0)
     end
 end
 
-saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
-close all;
+%saveas(gca, fullfile(pth,nam),'png'); %issue when saving, should expand image
+%close all;
 
 
 %% Topo distribution of powerspectra similar to Eliana's paper
