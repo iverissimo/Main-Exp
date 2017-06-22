@@ -426,6 +426,8 @@ while ( true )
             clsSubj=subject;
             fname=[cname '_' subject '_' datestr];
             fprintf('Saving classifier to : %s\n',fname);save([fname '.mat'],'-struct','clsfr');
+            resname=['res_' subject '_' datestr];
+            fprintf('Saving classifier to : %s\n',resname);save([resname '.mat'],'-struct','res');
             %catch
             % fprintf('Error in : %s',phaseToRun);
             % le=lasterror;fprintf('ERROR Caught:\n %s\n%s\n',le.identifier,le.message);
