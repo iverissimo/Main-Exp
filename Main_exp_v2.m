@@ -366,9 +366,9 @@ sendEvent('testing','end'); % start continuous feedback phase
 if group == 1 || group == 3
     endSrlPort(srl); %close serial por communication
     angle = 180-angle; %real angle value
-    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','angle')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','angle','bl_points','abd_points')
 else
-    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points')
+    save(fullfile(cfgcls.pth_lab3,[cfgcls.sub '_info.mat']),'curr_points','bl_points','abd_points')
 end
 
 text(0,6,goodbyetxtII,'Color',txtColor,'FontSize',txtSize_wlc);

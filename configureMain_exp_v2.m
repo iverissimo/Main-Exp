@@ -45,7 +45,7 @@ dur_trial_cal = 5;                              %trial duration [s]
 dur_iti_cal = 3;                                % inter-trial-interval [s]
 
 num_trial_cal = 3;                          % number of trials in one block
-num_block_cal = 3;%24;%3;                             % number of blocks
+num_block_cal = 18;%3;                             % number of blocks
 
 cond_cal = 3;                                   % number of conditions being tested
 cond_name_cal = {'abduct your toe','flex your toes','do not move'};
@@ -55,6 +55,7 @@ type_cal = [1 2 3]; %type of condition, matrix of 1xcond
 num_cal = zeros(1,length(type_cal)); %number of blocks per condition, matrix of 1xcond
 end_cond_cal = round(num_block_cal/cond_cal); %max number of blocks per condition
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %train classifier parameters
 cfgcls.tot_trl = dur_trial_cal*1000; %total trial duration in calibration phase [ms]
 cfgcls.train_wndow = 750; %window of data to use from calibration [ms]
@@ -63,6 +64,17 @@ cfgcls.ovrl = 0; %overlap windows? (0 - no)
 cfgcls.ovrl_wndow = 0; %length of overlap [ms]
 cfgcls.freqband = [8 30]; %frequency band to preprocess data
 save('cfgcls.mat','cfgcls');
+
+thresh = 0.9;%0.95; %threshold to reach before giving feedback
+welch_width_ms=250; % width of welch window => spectral resolution
+
+trainOpts={'width_ms',welch_width_ms,'badtrrm',0,'spatialfilter','car+wht',...
+    'adaptspatialfiltFn',{'filtPipeline' {'rmEMGFilt' []} ...
+    {'artChRegress',[],{'EXG1' 'EXG2' 'EXG3' 'EXG4' 'AFz' 'AF3' 'FP1' 'FPz' 'FP2' 'AF4' ...
+    'AF8' 'AF7' '1/f' 'EMG'}}},...
+    'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 welcometxt1 = sprintf(['\n\nWelcome to this experiment!' ...
     '\n\nYou will be asked to perform certain movements on cue.' ...
@@ -108,12 +120,12 @@ goodbyetxt = sprintf('\nThank you! \n\nWait for more instructions regarding the 
 
 %% Define conditions for Part II
 dur_trial = 12;                              % move trial duration[s]
-dur_iti = 3;%4.5;                            % inter-trial-interval [s]
-dur_bl = 6;%5;                                  % baseline trial duration [s]
+dur_iti = 3;                            % inter-trial-interval [s]
+dur_bl = 6;                                  % baseline trial duration [s]
 dur_feedback = 1.5;                           % feedback duration (s)
 
-num_trial = 3;%2;                          % number of trials in one block
-num_block = 6;%50;                             % number of blocks
+num_trial = 3;                          % number of trials in one block
+num_block = 30;%6;                             % number of blocks
 
 cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
@@ -123,6 +135,9 @@ type = [1 2]; %type of condition, matrix of 1xcond
 end_cond = round(num_block/cond); %max number of blocks per condition
 points = 0; %performance feedback counter
 curr_points = zeros(1,num_block); %points obtained in the end of each block
+bl_points = zeros(num_block,num_trial);
+abd_points = zeros(num_block,num_trial);
+
 %outcome_bl = rand(num_block,round(dur_bl/dur_feedback)*num_trial); %random distribution between 0 and 1 for baseline
 rnd_thresh = 0.7;%tresh for random outcome, biased to not giving feedback
 
@@ -130,15 +145,6 @@ rnd_thresh = 0.7;%tresh for random outcome, biased to not giving feedback
 comport = '/dev/tty.usbmodem141141';%'/dev/tty.usbmodem141131';%'/dev/tty.usbmodem14111'; %'COM5'; %Serial port name for arduino connection
 ang_max = 140; %max angle for robot movement
 ang_min = 0; %min angle for robot movement
-
-% classifier training options
-thresh = 0.9;%0.95; %threshold to reach before giving feedback
-welch_width_ms=250; % width of welch window => spectral resolution
-
-trainOpts={'width_ms',welch_width_ms,'badtrrm',0,'spatialfilter','car+wht',...
-    'adaptspatialfiltFn',{'filtPipeline' {'rmEMGFilt' []} ...
-    {'artChRegress',[],{'EXG1' 'EXG2' 'EXG3' 'EXG4' 'AFz' 'AF3' 'FP1' 'FPz' 'FP2' 'AF4' '1/f' 'EMG'}}},...
-    'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
 
 welcometxtII_1 = sprintf(['\n\nWelcome to this experiment!' ...
     '\n\nYou will be asked to try to move your toe on cue.' ...

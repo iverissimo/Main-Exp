@@ -130,6 +130,12 @@ for i = 1:num_block
             
         end
         
+        if j>1
+            bl_points(i,j) = points - (bl_points(i,j-1)+abd_points(i,j-1));
+        else
+            bl_points(i,j) = points; %baseline points for block i
+        end
+        
         sendEvent('baseline','end');
         sound_endtrl; %trial end beep
         clf;
@@ -220,6 +226,9 @@ for i = 1:num_block
             timeleft = dur_trial - (getwTime()-trial_StartTime);
             
         end
+        
+        abd_points(i,j) = points - bl_points(i,j);
+        
         sound_endtrl; %trial end beep
         clf;
         sendEvent('move','end');

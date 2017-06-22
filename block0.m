@@ -88,7 +88,7 @@ for j = 1:num_trial         %run trials for block i
         
         % feedback information...
         % change in points only if confident in right class
-        if group ~= 1 %sham
+        if group == 1 %sham
             outcome = rand(); %random outcome
             if outcome > rnd_thresh
                 pause(dur_feedback); %give some time between point display,
@@ -196,7 +196,7 @@ for j = 1:num_trial         %run trials for block i
             if prob(1) <= 1-thresh % 90% confident in negative class [abd]
                 if group == 3 %active
                     abductor_robot(angle,srl); %move to angle and return to init position
-                else
+                else %visual
                     pause(dur_feedback); %give some time between point display
                 end
                 points = points + 1;

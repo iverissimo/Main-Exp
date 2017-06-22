@@ -76,7 +76,7 @@ for i = 1:num_block
                     
                     pred = pred + ev.value; %accumulate decision values
                     
-                    %pred=pred+randn(1)*.1;
+                    pred=pred+randn(1)*.1;
 
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
@@ -104,12 +104,12 @@ for i = 1:num_block
             
             %random outcome
             % if baseline in robot conditions
-            outcome = rand();
+            %outcome = rand();
             
             % feedback information...
             % change in points only if confident in right class
             
-            if outcome > rnd_thresh
+            if prob(1) >= thresh %outcome > rnd_thresh
                 pause(dur_feedback); %give some time between point display,
                 points = points + 1;
                 sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
@@ -134,6 +134,12 @@ for i = 1:num_block
             
             timeleft = dur_bl - (getwTime()-trial_StartTime);
             
+        end
+        
+        if j>1
+            bl_points(i,j) = points - (bl_points(i,j-1)+abd_points(i,j-1));
+        else
+            bl_points(i,j) = points; %baseline points for block i
         end
         
         sendEvent('baseline','end');
@@ -175,7 +181,7 @@ for i = 1:num_block
                     
                     pred = pred + ev.value; %accumulate decision values
                     
-                    %pred=pred+randn(1)*.1;
+                    pred=pred+randn(1)*.1;
                     
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
@@ -200,12 +206,12 @@ for i = 1:num_block
             set(gca,'visible','off');
             drawnow;
             
-            %random outcome
-            outcome = rand();
+%             %random outcome
+%             outcome = rand();
             
             % feedback information...
             % change in points only if confident in right class
-            if outcome > rnd_thresh
+            if prob(1) <= 1-thresh %outcome > rnd_thresh
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
                 sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
@@ -231,6 +237,9 @@ for i = 1:num_block
             timeleft = dur_trial - (getwTime()-trial_StartTime);
             
         end
+        
+        abd_points(i,j) = points - bl_points(i,j);
+
         sound_endtrl; %trial end beep
         clf;
         sendEvent('move','end');
