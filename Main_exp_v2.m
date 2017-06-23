@@ -28,6 +28,18 @@ while (calibrate < 0)
 end
 
 if calibrate == 1
+    
+    skipintro = -1; %just to run while loop
+    while (skipintro < 0)
+        skipintro = input('Skip instructions? \n1- Yes; 0 - No. \nAnswer: ');
+        if (skipintro == 1 || skipintro == 0)
+            break;
+        else
+            disp('Option not available.')
+            skipintro = -1;
+        end
+    end
+    
     sendEvent('startPhase.cmd','calibrate'); %start calibration phase processing in startSigProcBuffer
     % Welcome text
     fig = figure(2);
@@ -54,83 +66,93 @@ if calibrate == 1
     %waitforbuttonpress();
     clf;
     
-    text(0,6,welcometxt2,'Color',txtColor,'FontSize',txtSize_wlc);
-    axis([0 10 0 10]);
-    set(gca,'visible','off');
-    press_button;
-    %waitforbuttonpress();
-    
-    soundTest(dur_iti_cal);
-    pause(1)
-    
-    clf;
-    
-    text(0,6,welcometxt3,'Color',txtColor,'FontSize',txtSize_wlc);
-    axis([0 10 0 10]);
-    set(gca,'visible','off');
-    press_button;
-    %waitforbuttonpress();
-    clf;
-    
-    %instructions loop
-    for i = 1:cond_cal
+    if skipintro ~= 1
         
-        tsk = cond_name_cal{i}; %task for condition i
-        cue = {sprintf('BLOCK %d',i),sprintf(tsk)};
+        text(0,6,welcometxt2,'Color',txtColor,'FontSize',txtSize_wlc);
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        press_button;
+        %waitforbuttonpress();
         
-        if i == 2
-            %toe flexion explanation
-            
-            text(0,6,welcometxt4,'Color',txtColor,'FontSize',txtSize_wlc);
-            axis([0 10 0 10]);
-            set(gca,'visible','off');
-            press_button;
-            %waitforbuttonpress();
-            clf;
-            
-        elseif i == 3
-            %rest explanation
-            
-            text(0,6,welcometxt5,'Color',txtColor,'FontSize',txtSize_wlc);
-            axis([0 10 0 10]);
-            set(gca,'visible','off');
-            press_button;
-            %waitforbuttonpress();
-            clf;
-            
-        end
-        
-        for t = 1:num_trial_cal
-            %show block number
-            text(5,5,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-            axis([0 10 0 10]);
-            set(gca,'visible','off');
-            drawnow;
-            
-            soundTest(dur_iti_cal); %iti period (beeps)
-            
-            %show cue = task for the condition
-            cue_move = text(5,3,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
-            axis([0 10 0 10]);
-            set(gca,'visible','off');
-            
-            sendEvent('example', evt_value_cal{i}) %event type example, to differ from type movement (of interest)
-            pause(dur_trial_cal); %movement period
-            
-            sound_endtrl; % low beep to indicate end of trial
-            delete(cue_move);
-            pause(0.6) %to not overlap start and finish sounds
-        end
+        soundTest(dur_iti_cal);
+        pause(1)
         
         clf;
+        
+        text(0,6,welcometxt3,'Color',txtColor,'FontSize',txtSize_wlc);
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        press_button;
+        %waitforbuttonpress();
+        clf;
+        
+        %instructions loop
+        for i = 1:cond_cal
+            
+            tsk = cond_name_cal{i}; %task for condition i
+            cue = {sprintf('BLOCK %d',i),sprintf(tsk)};
+            
+            if i == 2
+                %toe flexion explanation
+                
+                text(0,6,welcometxt4,'Color',txtColor,'FontSize',txtSize_wlc);
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
+                press_button;
+                %waitforbuttonpress();
+                clf;
+                
+            elseif i == 3
+                %rest explanation
+                
+                text(0,6,welcometxt5,'Color',txtColor,'FontSize',txtSize_wlc);
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
+                press_button;
+                %waitforbuttonpress();
+                clf;
+                
+            end
+            
+            for t = 1:num_trial_cal
+                %show block number
+                text(5,5,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
+                drawnow;
+                
+                soundTest(dur_iti_cal); %iti period (beeps)
+                
+                %show cue = task for the condition
+                cue_move = text(5,3,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
+                
+                sendEvent('example', evt_value_cal{i}) %event type example, to differ from type movement (of interest)
+                pause(dur_trial_cal); %movement period
+                
+                sound_endtrl; % low beep to indicate end of trial
+                delete(cue_move);
+                pause(0.6) %to not overlap start and finish sounds
+            end
+            
+            clf;
+        end
+        
+        text(0,6,welcometxt6,'Color',txtColor,'FontSize',txtSize_wlc);
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        press_button;
+        %waitforbuttonpress();
+        clf;
+    else
+        text(0,6,welcometxt7,'Color',txtColor,'FontSize',txtSize_wlc);
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        press_button;
+        %waitforbuttonpress();
+        clf;
     end
-    
-    text(0,6,welcometxt6,'Color',txtColor,'FontSize',txtSize_wlc);
-    axis([0 10 0 10]);
-    set(gca,'visible','off');
-    press_button;
-    %waitforbuttonpress();
-    clf;
     
     %%%% start running blocks %%%%
     
