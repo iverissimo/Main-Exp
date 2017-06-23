@@ -4,8 +4,7 @@
 
 %data saved and loaded
 calib = 1;
-if pc == 1 load(load_data);
-else dt = load_data(subjnum); load(dt{1}); end
+load(load_data);
 [traindata,traindevents,~] = Data_cut_window_online(traindata,traindevents,hdr,5000,750,500);
 
 %Rest vs Abduction

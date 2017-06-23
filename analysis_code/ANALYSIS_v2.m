@@ -25,23 +25,23 @@ type_tsk = {'visual','active','sham'};
 
 if pc == 1 %laptop
     % % % Add path
-    addpath(genpath('C:/Users/Inês/Main-Exp'));
-    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/buffer_bci'));
-    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/fieldtrip-20161107'));
-    addpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/bci_code'));
+    addpath(genpath('C:/Users/In?s/Main-Exp'));
+    addpath(genpath('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/buffer_bci'));
+    addpath(genpath('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/fieldtrip-20161107'));
+    addpath(genpath('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/bci_code'));
     
     ft_defaults; % makes sure all fieldtrip paths are correct
     
     % directory for header, events and samples files
     datadir = {[],[],[],[]...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject5_test/1951/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject6_test/170614/1535/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject7_test/1613/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject8_test/1604/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject9_test/1819/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject10_test/1142/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject11_test/1400/raw_buffer/0001',...
-        'C:/Users/Inês/Main-Exp/troubleshooting/subject12_test/1828/raw_buffer/0001'};
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject5_test/1951/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject6_test/170614/1535/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject7_test/1613/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject8_test/1604/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject9_test/1819/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject10_test/1142/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject11_test/1400/raw_buffer/0001',...
+        'C:/Users/In?s/Main-Exp/troubleshooting/subject12_test/1828/raw_buffer/0001'};
     
     load_data = sprintf('training_data_test_sub%s',subjnum);
     
@@ -56,7 +56,7 @@ if pc == 1 %laptop
         end
     end
     
-    pth = sprintf('C:/Users/Inês/Main-Exp/plots/sub%d',subjnum);
+    pth = sprintf('C:/Users/In?s/Main-Exp/plots/sub%d',subjnum);
     mkdir(pth) %folder to save plots for specific subject
     
 else
@@ -72,15 +72,13 @@ else
     ft_defaults; % makes sure all fieldtrip paths are correct
     
     % directory for header, events and samples files
-    datadir = {'[]',...
-        '[]',...
-        '[]',...
-        '[]',...
+    datadir = {'[]','[]','[]','[]',...
         '/Users/s4831829/output/test/170612/1951/raw_buffer/0001',...
-        '/Users/s4831829/output/test/170614/1535/raw_buffer/0001'};
+        '/Users/s4831829/output/test/170614/1535/raw_buffer/0001',...
+        '[]','[]','[]','[]','[]','[]',...
+        '/Users/s4831829/output/test/170622/1336/raw_buffer/0001'}; %sub13
     
-    load_data = {'training_data_test_%s','training_data_test_170512','training_data_test_170524',...
-        'training_data_test_170531','training_data_test_170612', 'training_data_test_170615'};
+    load_data = sprintf('training_data_test_sub%s',num2str(subjnum));
     
     fname = datadir{subjnum};
     % get the directory which contains the files
@@ -111,11 +109,15 @@ calib = 0;
 
 %% CALIBRATION
 % no need to run this everytime
-%analysis_calibration;
+analysis_calibration;
 
 %% Actual experiment
 
 [ind_starttest,hdr] = analysis_mainpredvalues_v2(all_events,hdr,calib,doplot,pc,subjnum,pth,type_tsk);
+
+%% ROC curve
+
+roc_analysis;
 
 %% Analyse data
 cfg = [];
@@ -167,7 +169,7 @@ data = ft_preprocessing(cfg,data_sliced);
 %% Remove EOG
 % EXT 1-4 are EOG
 if pc == 2; rmpath(genpath('/Users/s4831829/buffer_bci')); 
-else rmpath(genpath('D:/Documents/FCUL/Estágio Mestrado/MSc Project/Code/buffer_bci')); end; %remove buffer bci from path in lab3, to avoid artChRegress confusion
+else rmpath(genpath('D:/Documents/FCUL/Est?gio Mestrado/MSc Project/Code/buffer_bci')); end; %remove buffer bci from path in lab3, to avoid artChRegress confusion
 cfg = [];
 eog_ch = {'EXG1','EXG2','EXG3','EXG4'}; %eog channels
 data1 = subtractEOG(data,eog_ch);
