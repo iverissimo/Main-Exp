@@ -316,25 +316,31 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'calibrate','calibration'};
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
+            load(pname);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            %% INES EXPERIMENT
             [traindata,traindevents,state]=buffer_waitData(opts.buffhost,opts.buffport,[],'startSet',opts.epochEventType,'exitSet',{{'calibrate' 'calibration' 'sigproc.reset'} 'end'},'verb',opts.verb,'trlen_ms',opts.trlen_ms,opts.calibrateOpts{:});
             mi=matchEvents(traindevents,{'calibrate' 'calibration'},'end'); traindevents(mi)=[]; traindata(mi)=[];%remove exit event
-            fname=[dname '_' subject '_' datestr];
+            fname=[dname '_' subject '_' cfgcls.sub]; %datestr];
             fprintf('Saving %d epochs to : %s\n',numel(traindevents),fname);save([fname '.mat'],'traindata','traindevents','hdr');
             trainSubj=subject;
             
-            %% INES EXPERIMENT
-            pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
-            load(pname);
-            %load('cfgcls.mat') %struct with parameters defined in Main_exp
             [traindata,traindevents,~] = Data_cut_window_online(traindata,traindevents,hdr,opts.trlen_ms,cfgcls.train_wndow,cfgcls.init_offset);
             cutdata_name = strcat(fname,'_cut.mat');
             save(cutdata_name,'traindata','traindevents','hdr'); %cut and save data in smaller windows to train classifier
             
             %---------------------------------------------------------------------------------
         case {'train','training','trainerp','trainersp','train_subset','trainerp_subset','trainersp_subset','train_useropts','trainerp_useropts','trainersp_useropts'};
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
+            load(pname);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %try
             if ( ~isequal(trainSubj,subject) || ~exist('traindata','var') )
-                fname=[dname '_' subject '_' datestr];
+                fname=[dname '_' subject '_' cfgcls.sub]; %datestr];
                 fprintf('Loading training data from : %s\n',fname);
                 if ( ~(exist([fname '.mat'],'file') || exist(fname,'file')) )
                     warning(['Couldnt find a classifier to load file: ' fname]);
@@ -410,10 +416,6 @@ while ( true )
                         opts.trainOpts{:},userOpts{:});
                     
                     %% INES EXPERIMENT
-                    if exist('cfgcls.mat') ~= 1 %is not a variable in the workspace.
-                        pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
-                        load(pname);
-                    end
                     %automatically save train plots to subject specific
                     %folder in output
                     saveas(2, fullfile(cfgcls.pth_lab3, sprintf('ersp_%s',cfgcls.sub)), 'png');
@@ -424,10 +426,10 @@ while ( true )
                     error('Unrecognised classifer type');
             end
             clsSubj=subject;
-            fname=[cname '_' subject '_' datestr];
+            fname=[cname '_' subject '_' cfgcls.sub]; %datestr];
             fprintf('Saving classifier to : %s\n',fname);save([fname '.mat'],'-struct','clsfr');
-            resname=['res_' subject '_' datestr];
-            fprintf('Saving classifier to : %s\n',resname);save([resname '.mat'],'-struct','res');
+            resname=['res_' subject '_' cfgcls.sub]; %datestr];
+            fprintf('Saving results to : %s\n',resname);save([resname '.mat'],'-struct','res');
             %catch
             % fprintf('Error in : %s',phaseToRun);
             % le=lasterror;fprintf('ERROR Caught:\n %s\n%s\n',le.identifier,le.message);
@@ -443,9 +445,13 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'test','testing','epochfeedback','eventfeedback'};
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
+            load(pname);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %try
             if ( ~isequal(clsSubj,subject) || ~exist('clsfr','var') )
-                clsfrfile = [cname '_' subject '_' datestr];
+                clsfrfile = [cname '_' subject '_' cfgcls.sub]; %datestr];
                 if ( ~(exist([clsfrfile '.mat'],'file') || exist(clsfrfile,'file')) )
                     clsfrfile=[cname '_' subject];
                 end;
@@ -475,8 +481,12 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'contfeedback'};
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            pname=fullfile('/Users/s4831829/Main Exp','cfgcls.mat'); %struct with parameters defined in Main_exp
+            load(pname);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             try % try to load the classifier from file (in case someone else made it for us)
-                clsfrfile = [cname '_' subject '_' datestr];
+                clsfrfile = [cname '_' subject '_' cfgcls.sub]; %datestr];
                 if ( ~(exist([clsfrfile '.mat'],'file') || exist(clsfrfile,'file')) )
                     clsfrfile=[cname '_' subject];
                 end;
