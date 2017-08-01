@@ -7,4 +7,8 @@ plot(res.opt.tstf)
 
 prob = 1./(1+exp(-res.opt.tstf)); % convert from dv to probability (logistic transformation)
 
+figure
 plot(prob)
+title('data from res.opt.tstf')
+ylabel('Probability (%)')
+ 

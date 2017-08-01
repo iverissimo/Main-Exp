@@ -188,6 +188,13 @@ if doplot == 1 %do plots
             nbl(:,3) = bl_points(1:length(en_blk_events),3)-(bl_points(1:length(en_blk_events),1)+abd_points(1:length(en_blk_events),1));
             bl_points = nbl;
             abd_points = abd_points(1:length(en_blk_events),:);
+        else
+            nabd = zeros(length(en_blk_events),3);
+            nabd(:,1) = abd_points(1:length(en_blk_events),1);
+            nabd(:,2) = abd_points(1:length(en_blk_events),2)-bl_points(1:length(en_blk_events),1)-abd_points(1:length(en_blk_events),1);
+            nabd(:,3) = abd_points(1:length(en_blk_events),3)-bl_points(1:length(en_blk_events),2)-abd_points(1:length(en_blk_events),2);
+            abd_points = nabd;
+            bl_points = bl_points(1:length(en_blk_events),:);
         end
         
         figure
@@ -206,14 +213,16 @@ if doplot == 1 %do plots
         soma_points_abd = sum(abd_points,2);
         
         figure
-        ta2 = bar(soma_points_abd,'FaceColor',[0.9 0.9 0])
-        hold on
-        tq2 = bar(soma_points_bl,'FaceColor',[0 .6 .6])
+%         ta2 = bar(soma_points_abd,'FaceColor',[0.9 0.9 0])
+%         hold on
+%         tq2 = bar(soma_points_bl,'FaceColor',[0 .6 .6])
+        bar([soma_points_abd soma_points_bl],'BarWidth',2)
         title('Points per block')
         xlabel('Block Number')
         ylabel('Points')
         xlim([0 length(en_blk_events)+1]);
-        legend([ta2 tq2],'toe abd','rest');
+        %legend([ta2 tq2],'toe abd','rest');
+        legend({'toe abd','rest'})
         saveas(gca, fullfile(pth,'points_per_blk_bothtasks'),'png');
         close all;
         
@@ -299,7 +308,7 @@ if doplot == 1 %do plots
     
     k = 0;
     for j = 1:size(dv_bl,1)
-        dv_per_blk(j) = sum(dv_per_trl(j+k:j+k+2)) %sum of trials per block
+        dv_per_blk(j) = sum(dv_per_trl(j+k:j+k+2)); %sum of trials per block
         k = k+2;
     end
     
