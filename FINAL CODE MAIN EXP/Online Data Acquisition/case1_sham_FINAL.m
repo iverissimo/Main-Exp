@@ -6,7 +6,6 @@ text(0,6,welcometxtII_3_1,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
-%waitforbuttonpress();
 clf;
 
 block0; %do example block
@@ -15,8 +14,11 @@ text(0,6,welcometxtII_5,'Color',txtColor,'FontSize',txtSize_wlc);
 axis([0 10 0 10]);
 set(gca,'visible','off');
 press_button;
-%waitforbuttonpress();
 clf;
+
+num = 2; %counter for plotting, only useful while ROC function not finished
+p = 1; % counter for recalculating ROC curve
+dval = zeros(1,num_pred); tl = zeros(1,num_pred);
 
 for i = 1:num_block
     
@@ -29,7 +31,6 @@ for i = 1:num_block
     
     sendEvent('relax','pause')
     press_button; %pause period
-    %waitforbuttonpress();
     clf;
     
     points = 0; %counter for point system, starts with 0 for each block
@@ -85,6 +86,30 @@ for i = 1:num_block
                     
                 end
             end
+            
+             %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            dval(p) = pred(1); %decision value
+            tl(p) = 1; %positive label
+            p = p + 1; %increment position
+            
+            if p >= num_pred
+                res.opt.tstf = cat(1,res.opt.tstf,dval');
+                res.Y = cat(1,res.Y,tl');
+                rocval(num).dvs = res.opt.tstf;
+                rocval(num).labels = res.Y;
+                [thresh_dv,res] = ROCthresh_online(res,cfgcls,'num_pred',num_pred,'prev_thresh',thresh_dv,'test',1);
+                thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
+                fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
+                rocval(num).thresh_dv = thresh_dv;
+                rocval(num).thresh = thresh;
+                dval = zeros(1,num_pred); tl = zeros(1,num_pred);
+                p = 1;
+                num = num + 1;
+                
+            end
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -190,6 +215,31 @@ for i = 1:num_block
                 end
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            dval(p) = pred(1); %decision value
+            tl(p) = -1; %negative label
+            p = p + 1; %increment position
+            
+            if p >= num_pred
+                res.opt.tstf = cat(1,res.opt.tstf,dval');
+                res.Y = cat(1,res.Y,tl');
+                rocval(num).dvs = res.opt.tstf;
+                rocval(num).labels = res.Y;
+                [thresh_dv,res] = ROCthresh_online(res,cfgcls,'num_pred',num_pred,'prev_thresh',thresh_dv,'test',1);
+                thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
+                fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
+                rocval(num).thresh_dv = thresh_dv;
+                rocval(num).thresh = thresh;
+                dval = zeros(1,num_pred); tl = zeros(1,num_pred);
+                p = 1;
+                num = num + 1;
+                
+            end
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);

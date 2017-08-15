@@ -44,7 +44,7 @@ ang_min = 0; %min angle for robot movement
 dur_trial_cal = 5;                              %trial duration [s]
 dur_iti_cal = 3;                                % inter-trial-interval [s]
 num_trial_cal = 3;                          % number of trials in one block
-num_block_cal = 18;%3;                             % number of blocks
+num_block_cal = 6;%18;%3;                             % number of blocks
 cond_cal = 3;                                   % number of conditions being tested
 cond_name_cal = {'abduct your toe','flex your toes','do not move'};
 evt_value_cal = {'toe_abd','toe_flex','rest'}; %event value for type 'movement'
@@ -60,7 +60,7 @@ dur_iti = 3;                            % inter-trial-interval [s]
 dur_bl = 6;                                  % baseline trial duration [s]
 dur_feedback = 1.5;                           % feedback duration (s)
 num_trial = 3;                          % number of trials in one block
-num_block = 30;%6;                             % number of blocks
+num_block = 6;%30;%6;                             % number of blocks
 cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
 evt_value = {'toe_abd','rest'}; %event value for type 'movement'
@@ -91,7 +91,8 @@ cfgcls.trainOpts = {'width_ms',cfgcls.welch_width_ms,'badtrrm',cfgcls.badtrrm,'s
     'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
 
 thresh = []; % threshold to reach before giving feedback
-rnd_thresh = []; %tresh for random outcome, biased to not giving feedback
+num_pred = 10; %number of predictions to increment each time for calculating a new thresh value
+
 
 %% Display settings
 txtColor = [.8 .8 .8];                      %text color

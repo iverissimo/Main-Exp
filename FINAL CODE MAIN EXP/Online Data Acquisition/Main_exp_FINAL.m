@@ -20,6 +20,16 @@ mkdir(cfgcls.pth_lab3);
 configureMain_exp_FINAL; % call all variables that are needed to run the code
 
 save([cfgcls.pth_lab3 '/cfgcls.mat'],'cfgcls');
+save('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat','cfgcls'); %then it is also saved in SigProc folder
+
+startSigProc = -1; %just to run while loop
+while (startSigProc < 0)
+    startSigProc = input('Please run iv_startSigProcBuffer_FINAL in separate MATLAB window. When done press 1: ');
+    if startSigProc ~= 1 
+        disp('Option not available.')
+        startSigProc = -1;
+    end
+end
 
 %% Part I, training/calibration phase
 % similar to design used in first pilot
@@ -45,15 +55,19 @@ end
 %% Plot ROC curve
 
 rocplot = -1; %just to run while loop
-while (comd < 0)
+while (rocplot < 0)
     rocplot = input('Plot ROC curve ? (yes = 1): ');
     
     if (rocplot == 1)
         resname = sprintf('res_test_sub%s_session%s',cfgcls.sub,cfgcls.session);
         res = load([cfgcls.pth_lab3 '/' resname]); %struct with results from calib (train clsfr)
-        thresh = ROCthresh_online(res,1,cfgcls.pth_lab3);
-        thresh = 1./(1+exp(-thresh)); % convert from dv to probability (logistic transformation)
-        
+        [thresh_dv,res] = ROCthresh_online(res,cfgcls,'doplot',1,'calib',1);
+        thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
+        fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
+        rocval(1).thresh_dv = thresh_dv;
+        rocval(1).thresh = thresh;
+        rocval(1).dvs = res.opt.tstf;
+        rocval(1).labels = res.Y;
     else
         disp('Option not available.')
         rocplot = -1;
@@ -162,6 +176,7 @@ sendEvent('testing','end'); % start continuous feedback phase
 cfgcls.subinfo.curr_points = curr_points; % points by the end of each block
 cfgcls.subinfo.bl_points = bl_points; % baseline points [num block x num trial]
 cfgcls.subinfo.abd_points = abd_points; % toe abduction points [num block x num trial]
+cfgcls.rocval = rocval; % roc values that were used to change thresh during the experiment
 
 %save interesting variables
 if group == 1 || group == 3
