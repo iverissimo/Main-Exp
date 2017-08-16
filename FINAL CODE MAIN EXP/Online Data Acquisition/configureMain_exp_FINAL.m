@@ -21,7 +21,7 @@ end;
 
 %% Buttonbox settings for lab3 (using the USB multiport)
 
-bb.Device    = '/dev/tty.usbmodem141131';%'/dev/tty.usbmodem141121';
+bb.Device    = '/dev/tty.usbmodem1413131';%'/dev/tty.usbmodem141131';%'/dev/tty.usbmodem141121';
 bb.BaudRate  = 115200;
 bb.DataBits  = 8;
 bb.StopBits  = 1;
@@ -35,7 +35,7 @@ time2press = 10*60; % [s] wait a maximum of 10 minutes for a button press, or el
 
 %% Robot settings
 %Serial port name for arduino connection
-comport = '/dev/tty.usbmodem141141';%'/dev/tty.usbmodem141131';%'/dev/tty.usbmodem14111'; 
+comport = '/dev/tty.usbmodem1413141';%'/dev/tty.usbmodem141141';%'/dev/tty.usbmodem141131';%'/dev/tty.usbmodem14111'; 
 ang_max = 140; %max angle for robot movement
 ang_min = 0; %min angle for robot movement
 
@@ -44,7 +44,7 @@ ang_min = 0; %min angle for robot movement
 dur_trial_cal = 5;                              %trial duration [s]
 dur_iti_cal = 3;                                % inter-trial-interval [s]
 num_trial_cal = 3;                          % number of trials in one block
-num_block_cal = 6;%18;%3;                             % number of blocks
+num_block_cal = 18;%3;                             % number of blocks
 cond_cal = 3;                                   % number of conditions being tested
 cond_name_cal = {'abduct your toe','flex your toes','do not move'};
 evt_value_cal = {'toe_abd','toe_flex','rest'}; %event value for type 'movement'
@@ -60,7 +60,7 @@ dur_iti = 3;                            % inter-trial-interval [s]
 dur_bl = 6;                                  % baseline trial duration [s]
 dur_feedback = 1.5;                           % feedback duration (s)
 num_trial = 3;                          % number of trials in one block
-num_block = 6;%30;%6;                             % number of blocks
+num_block = 30;%6;                             % number of blocks
 cond = 2;                                   % number of conditions being tested
 cond_name = {'abduct your toe','do not move'};
 evt_value = {'toe_abd','rest'}; %event value for type 'movement'
@@ -90,7 +90,7 @@ cfgcls.trainOpts = {'width_ms',cfgcls.welch_width_ms,'badtrrm',cfgcls.badtrrm,'s
     'adaptspatialfiltFn',{'filtPipeline' {'rmEMGFilt' []} {'artChRegress',[],cfgcls.adaptspatfchn}},...
     'objFn','mlr_cg','binsp',0,'spMx','1vR'}; % (emg-removal->eog-removal) + direct multi-class training
 
-thresh = []; % threshold to reach before giving feedback
+thresh = 0.5; % threshold to reach before giving feedback
 num_pred = 10; %number of predictions to increment each time for calculating a new thresh value
 
 
