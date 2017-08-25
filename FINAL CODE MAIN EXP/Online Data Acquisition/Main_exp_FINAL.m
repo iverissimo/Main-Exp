@@ -11,6 +11,8 @@
 
 clear all; close all;
 
+%% Define subject info and start SigProc
+
 cfgcls.sub = input('Write subject number: ','s');
 cfgcls.session = input('Write session number: ','s');
 cfgcls.pth_lab3 = sprintf('/Users/s4831829/output/troubleshooting subjects/subject%s/session%s',cfgcls.sub,cfgcls.session);
@@ -19,17 +21,49 @@ mkdir(cfgcls.pth_lab3);
 
 configureMain_exp_FINAL; % call all variables that are needed to run the code
 
+group = input('Participant belongs to which group?\n 1-Sham; 2-Visual; 3-Active\n Answer: ');
+cfgcls.subinfo.group = group_type{group}; %save subject group type in cfgclsr struct
+
 save([cfgcls.pth_lab3 '/cfgcls.mat'],'cfgcls');
 save('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat','cfgcls'); %then it is also saved in SigProc folder
 
 startSigProc = -1; %just to run while loop
 while (startSigProc < 0)
     startSigProc = input('Please run iv_startSigProcBuffer_FINAL in separate MATLAB window. When done press 1: ');
-    if startSigProc ~= 1 
+    if startSigProc ~= 1
         disp('Option not available.')
         startSigProc = -1;
     end
 end
+
+
+%% Robot start serial port, show movement to participant
+
+[srl] = initSrlPort(comport); %open arduino serial port
+save('srl','srl');
+robot_rest(srl); %run it once just so it goes to initial position
+
+ang_calib; %launch gui for to select best angle for participant
+
+% get the handle to the GUI and wait for it to be closed
+hGui = findobj('Tag','tformChoiceGui');
+waitfor(hGui);
+
+if group == 1 || group == 3
+    angle = -1;
+    % continue with script
+    while (angle < 0 )
+        angle = input('Specify angle for robot movement (max 140): '); %angle for robot max position
+        if (ang_min <= angle) && (angle <= ang_max)
+            angle = 180 - angle; %Eg: Want it to move 100, but actual motor position is 80
+            break;
+        else
+            disp('Option not available.')
+            angle = -1;
+        end
+    end
+end
+
 
 %% Part I, training/calibration phase
 % similar to design used in first pilot
@@ -77,47 +111,7 @@ end
 
 %% Part II, With Feedback
 
-group = -1; %just to run while loop
-while (group < 0)
-    group = input('Participant belongs to which group?\n 1-Sham; 2-Visual; 3-Active\n Answer: ');
-    if (group == 1 || group == 2 || group == 3)
-        break;
-    else
-        disp('Option not available.')
-        group = -1;
-    end
-end
-
-cfgcls.subinfo.group = group_type{group}; %save subject group type in cfgclsr struct
-
 sendEvent('startPhase.cmd','contfeedback'); % start continuous feedback phase
-angle = -1;
-
-if group == 1 || group == 3
-    
-    [srl] = initSrlPort(comport); %open arduino serial port
-    save('srl','srl');
-    robot_rest(srl); %run it once just so it goes to initial position
-    
-    ang_calib; %launch gui for to select best angle for participant
-    
-    % get the handle to the GUI and wait for it to be closed
-    hGui = findobj('Tag','tformChoiceGui');
-    waitfor(hGui);
-    
-    % continue with script
-    while (angle < 0 )
-        angle = input('Specify angle for robot movement (max 140): '); %angle for robot max position
-        if (ang_min <= angle) && (angle <= ang_max)
-            angle = 180 - angle; %Eg: Want it to move 100, but actual motor position is 80
-            break;
-        else
-            disp('Option not available.')
-            angle = -1;
-        end
-    end
-    
-end
 
 % Welcome text
 fig = figure(3);
@@ -179,8 +173,8 @@ cfgcls.subinfo.abd_points = abd_points; % toe abduction points [num block x num 
 cfgcls.rocval = rocval; % roc values that were used to change thresh during the experiment
 
 %save interesting variables
+endSrlPort(srl); % close serial por communication
 if group == 1 || group == 3
-    endSrlPort(srl); % close serial por communication
     cfgcls.subinfo.robotang = 180-angle; % real angle value
 end
 

@@ -25,15 +25,21 @@ sendEvent('example','start');
 
 for j = 1:num_trial         %run trials for block i
     
+    %fixation cross
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    axis([0 10 0 10]);
+    set(gca,'visible','off');
+    
     %block number i
     text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
         'FontSize',txtSize_cue,'HorizontalAlignment','center');
     axis([0 10 0 10]);
     set(gca,'visible','off');
+    
     drawnow;
     
     soundTest(dur_iti); %iti period (beeps)
-        
+    
     %%%%%% Baseline period %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     initgetwTime; %start var getwTime
@@ -42,7 +48,7 @@ for j = 1:num_trial         %run trials for block i
     state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
     pred = 0; %reset decision values between trials
     prob = 0;
-        
+    
     while(timeleft>0) %will run until baseline trial time is over
         
         %%%%%%%%% receive classification outcome %%%%%%%%%%%%
@@ -66,6 +72,11 @@ for j = 1:num_trial         %run trials for block i
             end
         end
         
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        
         text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
@@ -76,7 +87,7 @@ for j = 1:num_trial         %run trials for block i
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
-        text(5,4,sprintf('Current score is %0.1f.',points),...
+        text(5,4,sprintf('Score %0.1f',points),...
             'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
         set(gca,'visible','off');
@@ -99,6 +110,11 @@ for j = 1:num_trial         %run trials for block i
             end
         end
         
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        
         text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
@@ -109,7 +125,7 @@ for j = 1:num_trial         %run trials for block i
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
-        text(5,4,sprintf('Current score is %0.1f.',points),...
+        text(5,4,sprintf('Score %0.1f',points),...
             'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
         set(gca,'visible','off');
@@ -121,6 +137,11 @@ for j = 1:num_trial         %run trials for block i
     
     sound_endtrl; %trial end beep
     clf;
+    
+    %fixation cross
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    axis([0 10 0 10]);
+    set(gca,'visible','off');
     
     text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
         'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -138,7 +159,7 @@ for j = 1:num_trial         %run trials for block i
     state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
     pred = 0; %reset decision values between trials
     prob = 0;
-        
+    
     while(timeleft>0) %will run until trial time is over
         
         %%%%%%%%% receive classification outcome %%%%%%%%%%%%
@@ -163,6 +184,11 @@ for j = 1:num_trial         %run trials for block i
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        
         text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
@@ -173,7 +199,7 @@ for j = 1:num_trial         %run trials for block i
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
-        text(5,4,sprintf('Current score is %0.1f.',points),...
+        text(5,4,sprintf('Score %0.1f',points),...
             'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
         set(gca,'visible','off');
@@ -200,6 +226,11 @@ for j = 1:num_trial         %run trials for block i
             end
         end
         
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        
         text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
@@ -210,7 +241,7 @@ for j = 1:num_trial         %run trials for block i
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
-        text(5,4,sprintf('Current score is %0.1f.',points),...
+        text(5,4,sprintf('Score %0.1f',points),...
             'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
         set(gca,'visible','off');
@@ -221,13 +252,24 @@ for j = 1:num_trial         %run trials for block i
     end
     sound_endtrl; %trial end beep
     clf;
+    %fixation cross
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    axis([0 10 0 10]);
+    set(gca,'visible','off');
+    %block number i
+    text(5,8,sprintf('BLOCK 0'),'Color',txtColor,...
+        'FontSize',txtSize_cue,'HorizontalAlignment','center');
+    axis([0 10 0 10]);
+    set(gca,'visible','off');
     pause(dur_feedback); %pause 1.5 second so beeps don't overlap
     
 end
 
 sendEvent('example','end');
+clf;
+pause(1);
 
-text(5,5,sprintf('Your score is %0.1f.',points),...
+text(5,5,sprintf('Your score is %0.1f',points),...
     'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
 axis([0 10 0 10]);
 set(gca,'visible','off');

@@ -95,16 +95,19 @@ if calibrate == 1
             end
             
             for t = 1:num_trial_cal
+                %fixation cross
+                plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y'); 
+                set(gca,'visible','off');
+                
                 %show block number
-                text(5,5,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
                 axis([0 10 0 10]);
                 set(gca,'visible','off');
-                drawnow;
-                
+
                 soundTest(dur_iti_cal); %iti period (beeps)
                 
                 %show cue = task for the condition
-                cue_move = text(5,3,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                cue_move = text(5,4,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
                 axis([0 10 0 10]);
                 set(gca,'visible','off');
                 
@@ -193,22 +196,27 @@ if calibrate == 1
             drawnow;
             
             sendEvent('relax','pause')
-            pause(2); %smaller pause period
+            pause(3); %smaller pause period
             
         end
         clf; %clear screen
         
         for j = 1:num_trial_cal         %run trials for block i
             
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            set(gca,'visible','off');
+            
             %block number i
-            text(5,5,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+            text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             drawnow;
             
             soundTest(dur_iti_cal); %iti period (beeps)
             
-            cue_move = text(5,3,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+            %show cue = task for the condition
+            cue_move = text(5,4,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             

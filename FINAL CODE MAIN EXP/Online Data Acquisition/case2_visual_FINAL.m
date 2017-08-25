@@ -39,11 +39,17 @@ for i = 1:num_block
     
     for j = 1:num_trial         %run trials for block i
         
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        
         %block number i
         text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
         axis([0 10 0 10]);
         set(gca,'visible','off');
+        
         drawnow;
         
         soundTest(dur_iti); %iti period (beeps)
@@ -109,6 +115,11 @@ for i = 1:num_block
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -119,7 +130,7 @@ for i = 1:num_block
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
-            text(5,4,sprintf('Current score is %0.1f.',points),...
+            text(5,4,sprintf('Score %0.1f',points),...
                 'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
@@ -135,6 +146,11 @@ for i = 1:num_block
                 clf;
             end
             
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -145,7 +161,7 @@ for i = 1:num_block
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
-            text(5,4,sprintf('Current score is %0.1f.',points),...
+            text(5,4,sprintf('Score %0.1f',points),...
                 'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
@@ -164,6 +180,11 @@ for i = 1:num_block
         sendEvent('baseline','end');
         sound_endtrl; %trial end beep
         clf;
+        
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
         
         text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
             'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -232,6 +253,11 @@ for i = 1:num_block
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -242,7 +268,7 @@ for i = 1:num_block
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
-            text(5,4,sprintf('Current score is %0.1f.',points),...
+            text(5,4,sprintf('Score %0.1f',points),...
                 'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
@@ -257,6 +283,11 @@ for i = 1:num_block
                 clf;
             end
             
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            
             text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
                 'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
@@ -267,7 +298,7 @@ for i = 1:num_block
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
-            text(5,4,sprintf('Current score is %0.1f.',points),...
+            text(5,4,sprintf('Score %0.1f',points),...
                 'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
             axis([0 10 0 10]);
             set(gca,'visible','off');
@@ -283,6 +314,15 @@ for i = 1:num_block
         clf;
         sendEvent('move','end');
         sendEvent('trial','end');
+        %fixation cross
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
+        %block number i
+        text(5,8,sprintf('BLOCK %d',i),'Color',txtColor,...
+            'FontSize',txtSize_cue,'HorizontalAlignment','center');
+        axis([0 10 0 10]);
+        set(gca,'visible','off');
         pause(dur_feedback); %pause 1.5 second so beeps don't overlap
         
     end
@@ -305,6 +345,9 @@ for i = 1:num_block
     else
         feedtxt = sprintf('Your score is %0.1f.',points);
     end
+    
+    clf;
+    pause(1);
     
     text(5,5,feedtxt,'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
     axis([0 10 0 10]);
