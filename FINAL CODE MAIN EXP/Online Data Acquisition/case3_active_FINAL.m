@@ -40,7 +40,7 @@ for i = 1:num_block
     for j = 1:num_trial         %run trials for block i
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -116,7 +116,7 @@ for i = 1:num_block
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -147,7 +147,7 @@ for i = 1:num_block
             end
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -182,7 +182,7 @@ for i = 1:num_block
         clf;
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -254,7 +254,7 @@ for i = 1:num_block
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -284,7 +284,7 @@ for i = 1:num_block
             end
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -315,7 +315,7 @@ for i = 1:num_block
         sendEvent('move','end');
         sendEvent('trial','end');
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         %block number i
@@ -340,9 +340,9 @@ for i = 1:num_block
             motivtxt = 'You can do better.';
         end
         
-        feedtxt = sprintf('Your score is %0.1f.\n\n%s',points,motivtxt);
+        feedtxt = sprintf('Your score is %0.1f\n\n%s',points,motivtxt);
     else
-        feedtxt = sprintf('Your score is %0.1f.',points);
+        feedtxt = sprintf('Your score is %0.1f',points);
     end
     
     clf;

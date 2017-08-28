@@ -96,15 +96,24 @@ if calibrate == 1
             
             for t = 1:num_trial_cal
                 %fixation cross
-                plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y'); 
+                plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
                 set(gca,'visible','off');
                 
                 %show block number
                 text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
                 axis([0 10 0 10]);
                 set(gca,'visible','off');
-
+                
                 soundTest(dur_iti_cal); %iti period (beeps)
+                
+                %fixation cross
+                plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
+                set(gca,'visible','off');
+                
+                %show block number
+                text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
                 
                 %show cue = task for the condition
                 cue_move = text(5,4,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -116,6 +125,14 @@ if calibrate == 1
                 
                 sound_endtrl; % low beep to indicate end of trial
                 delete(cue_move);
+                %fixation cross
+                plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
+                set(gca,'visible','off');
+                
+                %show block number
+                text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+                axis([0 10 0 10]);
+                set(gca,'visible','off');
                 pause(0.6) %to not overlap start and finish sounds
             end
             
@@ -204,7 +221,7 @@ if calibrate == 1
         for j = 1:num_trial_cal         %run trials for block i
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
             set(gca,'visible','off');
             
             %block number i
@@ -214,6 +231,16 @@ if calibrate == 1
             drawnow;
             
             soundTest(dur_iti_cal); %iti period (beeps)
+            
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
+            set(gca,'visible','off');
+            
+            %block number i
+            text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            drawnow;
             
             %show cue = task for the condition
             cue_move = text(5,4,cue{2},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
@@ -225,6 +252,15 @@ if calibrate == 1
             
             sound_endtrl; % low beep to indicate end of trial
             delete(cue_move);
+            %fixation cross
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
+            set(gca,'visible','off');
+            
+            %block number i
+            text(5,6,cue{1},'Color',txtColor,'FontSize',txtSize_cue,'HorizontalAlignment','center');
+            axis([0 10 0 10]);
+            set(gca,'visible','off');
+            drawnow;
             pause(0.6) %to not overlap start and finish sounds
             
         end

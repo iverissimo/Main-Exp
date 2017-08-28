@@ -26,7 +26,7 @@ sendEvent('example','start');
 for j = 1:num_trial         %run trials for block i
     
     %fixation cross
-    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
     axis([0 10 0 10]);
     set(gca,'visible','off');
     
@@ -73,7 +73,7 @@ for j = 1:num_trial         %run trials for block i
         end
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -111,7 +111,7 @@ for j = 1:num_trial         %run trials for block i
         end
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -139,7 +139,7 @@ for j = 1:num_trial         %run trials for block i
     clf;
     
     %fixation cross
-    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
     axis([0 10 0 10]);
     set(gca,'visible','off');
     
@@ -185,7 +185,7 @@ for j = 1:num_trial         %run trials for block i
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -227,7 +227,7 @@ for j = 1:num_trial         %run trials for block i
         end
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -253,7 +253,7 @@ for j = 1:num_trial         %run trials for block i
     sound_endtrl; %trial end beep
     clf;
     %fixation cross
-    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+    plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
     axis([0 10 0 10]);
     set(gca,'visible','off');
     %block number i

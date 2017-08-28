@@ -40,7 +40,7 @@ for i = 1:num_block
     for j = 1:num_trial         %run trials for block i
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -83,7 +83,7 @@ for i = 1:num_block
                     
                     pred = pred + ev.value; %accumulate decision values
                     
-                    pred=pred+randn(1)*.1;
+                    pred=pred+randn(1)*.1; %random outcome 
                     
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
@@ -118,7 +118,7 @@ for i = 1:num_block
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -138,10 +138,6 @@ for i = 1:num_block
             set(gca,'visible','off');
             drawnow;
             
-            %random outcome
-            % if baseline in robot conditions
-            %outcome = rand();
-            
             % feedback information...
             % change in points only if confident in right class
             
@@ -153,7 +149,7 @@ for i = 1:num_block
             end
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -188,7 +184,7 @@ for i = 1:num_block
         clf;
         
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         
@@ -227,7 +223,7 @@ for i = 1:num_block
                     
                     pred = pred + ev.value; %accumulate decision values
                     
-                    pred=pred+randn(1)*.1;
+                    pred=pred+randn(1)*.1; %random outcome
                     
                     % now do something with the prediction...
                     prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
@@ -262,7 +258,7 @@ for i = 1:num_block
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -282,9 +278,6 @@ for i = 1:num_block
             set(gca,'visible','off');
             drawnow;
             
-            %             %random outcome
-            %             outcome = rand();
-            
             % feedback information...
             % change in points only if confident in right class
             if prob(1) <= 1-thresh %outcome > rnd_thresh
@@ -295,7 +288,7 @@ for i = 1:num_block
             end
             
             %fixation cross
-            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+            plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
             axis([0 10 0 10]);
             set(gca,'visible','off');
             
@@ -326,7 +319,7 @@ for i = 1:num_block
         sendEvent('move','end');
         sendEvent('trial','end');
         %fixation cross
-        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','y');
+        plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','w');
         axis([0 10 0 10]);
         set(gca,'visible','off');
         %block number i
