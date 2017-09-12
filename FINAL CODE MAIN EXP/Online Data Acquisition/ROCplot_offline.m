@@ -33,7 +33,7 @@ for j = 1:numel(rocval)
         
     end
     
-    fpr_threshold=find(fpr == 0); %<= 1/72); % find the fpr closest to 1/(18*4)
+    fpr_threshold=find(fpr <= 1/100); %== 0); %<= 1/72); % find the fpr closest to 1/(18*4)
     
     if ~isempty(fpr_threshold) % only plot if not empty, ie., fpr =/= NaN
         

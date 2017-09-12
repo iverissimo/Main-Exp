@@ -48,7 +48,7 @@ for thres=1:length(t)
     
 end
 
-fpr_threshold=find(fpr == 0); %<= 1/72); % find the fpr closest to 1/(18*4)
+fpr_threshold=find(fpr <= 1/100); % == 0); % find the fpr closest to 
 if numel(fpr_threshold) == 0
         if any(strcmp(varargin,'prev_thresh')) 
             prev_thresh = varargin{find(strcmp(varargin,'prev_thresh'))+1};
