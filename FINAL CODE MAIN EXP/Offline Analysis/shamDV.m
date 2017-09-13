@@ -61,7 +61,18 @@ for d = 1:30
     k = k+3;
 end
 
-save([pth0 '/' sprintf('dv_move_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_move');
-save([pth0 '/' sprintf('dv_baseline_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_baseline');
+% save([pth0 '/' sprintf('dv_move_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_move');
+% save([pth0 '/' sprintf('dv_baseline_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_baseline');
+mkdir 'SHAM dvs'
+fold_path = 'C:/Users/Inês/Desktop/FINAL CODE MAIN EXP/Offline Analysis/SHAM dvs';
+save([fold_path '/' sprintf('dv_move_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_move');
+save([fold_path '/' sprintf('dv_baseline_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'new_dv_baseline');
+
+load([pth0 '/cfgcls']);
+for i = 1:numel(cfgcls.rocval)
+    roc_dv(i,1) = cfgcls.rocval(i).thresh_dv;
+end
+
+save([fold_path '/' sprintf('dv_ROCthresh_sub%s_session%s.mat',num2str(subjnum),num2str(sessnum))],'roc_dv');
 
 end
