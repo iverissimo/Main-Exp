@@ -290,7 +290,7 @@ while ( true )
     if ( opts.verb>0 ) ptime=getwTime(); end;
     % hide controller window while the phase is actually running
     if ( opts.useGUI && ishandle(contFig) ) set(contFig,'visible','off'); end;
-    
+        
     sendEvent(['sigproc.' lower(phaseToRun)],'ack'); % ack-start cmd recieved
     switch lower(phaseToRun);
         
@@ -316,6 +316,7 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'calibrate','calibration'};   % % INES'S EXPERIMENT
+            load('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat');
             
             [traindata,traindevents,state]=buffer_waitData(opts.buffhost,opts.buffport,[],'startSet',opts.epochEventType,'exitSet',{{'calibrate' 'calibration' 'sigproc.reset'} 'end'},'verb',opts.verb,'trlen_ms',opts.trlen_ms,opts.calibrateOpts{:});
             mi=matchEvents(traindevents,{'calibrate' 'calibration'},'end');
@@ -331,6 +332,8 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'train','training','trainerp','trainersp','train_subset','trainerp_subset','trainersp_subset','train_useropts','trainerp_useropts','trainersp_useropts'};
+            load('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat');
+
             %try
             if ( ~isequal(trainSubj,subject) || ~exist('traindata','var') )
                 
@@ -340,10 +343,10 @@ while ( true )
                 cutdata_name = strcat(fname,'_cut.mat');
                 load([cfgcls.pth_lab3 '/' cutdata_name]); %load cut training data
                 
-                if ( ~(exist([fname '.mat'],'file') || exist(fname,'file')) )
-                    warning(['Couldnt find a classifier to load file: ' fname]);
-                    break;
-                end
+%                 if ( ~(exist([fname '.mat'],'file') || exist(fname,'file')) )
+%                     warning(['Couldnt find a classifier to load file: ' fname]);
+%                     break;
+%                 end
                 chdr=hdr;
                 
                 if( ~isempty(chdr) ) hdr=chdr; end;
@@ -463,13 +466,14 @@ while ( true )
             
             %---------------------------------------------------------------------------------
         case {'contfeedback'};
-            
+            load('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat');
+
             try % try to load the classifier from file (in case someone else made it for us)
                 % INES'S EXPERIMENT
                 clsfrfile = [cname '_' subject '_sub' cfgcls.sub '_session' cfgcls.session]; %classifier name
-                if ( ~(exist([clsfrfile '.mat'],'file') || exist(clsfrfile,'file')) )
-                    clsfrfile=[cname '_' subject];
-                end;
+%                 if ( ~(exist([clsfrfile '.mat'],'file') || exist(clsfrfile,'file')) )
+%                     clsfrfile=[cname '_' subject];
+%                 end;
                 if(opts.verb>0)fprintf('Loading classifier from file : %s\n',clsfrfile);end;
                 clsfr=load([cfgcls.pth_lab3 '/' clsfrfile]);  % load classifier from subject specific path     
                 if( isfield(clsfr,'clsfr') ) clsfr=clsfr.clsfr; end;
@@ -509,6 +513,10 @@ while ( true )
                     % save to disk and merge with training data
                     fname=['testingdata' '_' subject '_' datestr];
                     fprintf('Saving %d epochs to : %s\n',numel(testdevents),fname);save([fname '.mat'],'testdata','testdevents','hdr');
+                    
+                    % Also save in subject specific folder (INES)
+                    save([cfgcls.pth_lab3 '/testingdata.mat'],'testdata','testdevents','hdr');
+                    
                     % concatenate with the training data so can re-train with the extended data-set
                     if ( ~isempty(traindata) )
                         traindata   =cat(1,traindata,testdata);
@@ -517,10 +525,9 @@ while ( true )
                         traindata   =testdata;
                         traindevents=testdevents;
                     end
-                    
-                    % Also save in subject specific folder 
-                    save([cfgcls.pth_lab3 '/' fname '.mat'],'testdata','testdevents','hdr');
+                      
                 end
+                
             catch
                 fprintf('Error in : %s',phaseToRun);
                 le=lasterror;fprintf('ERROR Caught:\n %s\n%s\n',le.identifier,le.message);
