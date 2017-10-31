@@ -24,6 +24,24 @@ configureMain_exp_FINAL; % call all variables that are needed to run the code
 group = input('Participant belongs to which group?\n 1-Sham; 2-Visual; 3-Active\n Answer: ');
 cfgcls.subinfo.group = group_type{group}; %save subject group type in cfgclsr struct
 
+if group == 1
+    cfgcls.sham.sub = input('Write subject number to obtain dvs: ','s');
+    cfgcls.sham.session = input('Write session numberto obtain dvs: ','s');
+    
+    load(['/Users/s4831829/FINAL CODE MAIN EXP/Online Data Acquisition/SHAM dv/'...
+        sprintf('dv_baseline_sub%s_session%s.mat',cfgcls.sham.sub,cfgcls.sham.session)]);
+    cfgcls.sham.dv_base = new_dv_baseline; clear new_dv_baseline; %load baseline dv
+    
+    load(['/Users/s4831829/FINAL CODE MAIN EXP/Online Data Acquisition/SHAM dv/'...
+        sprintf('dv_move_sub%s_session%s.mat',cfgcls.sham.sub,cfgcls.sham.session)]);
+    cfgcls.sham.dv_move = new_dv_move; clear new_dv_move; %loas move dv
+    
+    load(['/Users/s4831829/FINAL CODE MAIN EXP/Online Data Acquisition/SHAM dv/'...
+        sprintf('dv_ROCthresh_sub%s_session%s.mat',cfgcls.sham.sub,cfgcls.sham.session)]);
+    cfgcls.sham.dv_ROCthresh = roc_dv; clear roc_dv;
+    
+end
+
 save([cfgcls.pth_lab3 '/cfgcls.mat'],'cfgcls');
 save('/Users/s4831829/buffer_bci/matlab/signalProc/cfgcls.mat','cfgcls'); %then it is also saved in SigProc folder
 

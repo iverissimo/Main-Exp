@@ -1,5 +1,5 @@
 
-%case 3 version 2
+%case 1 version 2
 %new script to make it easier to modify each group
 
 text(0,6,welcometxtII_3_1,'Color',txtColor,'FontSize',txtSize_wlc);
@@ -16,9 +16,8 @@ set(gca,'visible','off');
 press_button;
 clf;
 
-num = 2; %counter for plotting, only useful while ROC function not finished
-p = 1; % counter for recalculating ROC curve
-dval = zeros(1,num_pred); tl = zeros(1,num_pred);
+num = 1; %counter for incrementing ROC vector
+p = 1; % counter for seeing timming for changing ROC value
 
 for i = 1:num_block
     
@@ -64,6 +63,8 @@ for i = 1:num_block
         state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
         pred = 0; %reset decision values between trials
         prob = 0;
+        num_dv = 1; %only initialize in beggining of trial!!!!
+        givefeed_time = getwTime(); %get current time
         
         sendEvent('baseline','start');
         
@@ -71,48 +72,39 @@ for i = 1:num_block
             
             %%%%%%%%% receive classification outcome %%%%%%%%%%%%
             
-            % wait for new prediction events to process *or* end of trial time
-            [events,state,nsamples,nevents] = buffer_newevents(buffhost,buffport,state,'classifier.prediction',[],timeleft*1000);
-            if ( isempty(events) )
-                fprintf('%d) no predictions!\n',nsamples);
-            else % if events to process
-                [ans,si]=sort([events.sample],'ascend'); % proc in *temporal* order, ans = the event; si = index in original matrix
-                % loop over received prediction events.
-                for ei=1:numel(events); %loop for size of events
-                    ev=events(si(ei));% event to process
-                    
-                    pred = pred + ev.value; %accumulate decision values
-                    
-                    pred=pred+randn(1)*.1; %random outcome 
-                    
-                    % now do something with the prediction...
-                    prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
-                    
-                    fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
-                    
-                end
-            end
-            
-            %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            dval(p) = pred(1); %decision value
-            tl(p) = 1; %positive label
-            p = p + 1; %increment position
-            
-            if p >= num_pred
-                res.opt.tstf = cat(1,res.opt.tstf,dval');
-                res.Y = cat(1,res.Y,tl');
-                rocval(num).dvs = res.opt.tstf;
-                rocval(num).labels = res.Y;
-                [thresh_dv,res] = ROCthresh_online(res,cfgcls,'num_pred',num_pred,'prev_thresh',thresh_dv,'test',1);
-                thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
-                fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
-                rocval(num).thresh_dv = thresh_dv;
-                rocval(num).thresh = thresh;
-                dval = zeros(1,num_pred); tl = zeros(1,num_pred);
-                p = 1;
-                num = num + 1;
+            if (getwTime()-givefeed_time >= 1/4) %give predictions at 4Hz rate
                 
+                if num_dv > size(cfgcls.sham.dv_base{i,j},1)
+                    warning('Max dv vector value was surpassed')
+                else
+                    pred = pred + cfgcls.sham.dv_base{i,j}(num_dv,1); %accumulate decision values
+                    num_dv = num_dv +1;
+                end
+                
+                % now do something with the prediction...
+                prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
+                
+                fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
+                
+                %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
+                p = p + 1; %increment position
+                
+                if p >= num_pred
+                    if num > numel(cfgcls.sham.dv_ROCthresh)
+                        thresh_dv = cfgcls.sham.dv_ROCthresh(numel(cfgcls.sham.dv_ROCthresh));
+                        warning('Max ROC dv vector value was surpassed')
+                    else
+                        thresh_dv = cfgcls.sham.dv_ROCthresh(num);
+                    end
+                    
+                    thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
+                    fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
+                    
+                    p = 1;
+                    num = num + 1;
+                end
+                
+                givefeed_time = getwTime(); %restart time counter
             end
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,7 +133,7 @@ for i = 1:num_block
             % feedback information...
             % change in points only if confident in right class
             
-            if prob(1) >= thresh %outcome > rnd_thresh
+            if prob(1) >= thresh
                 pause(dur_feedback); %give some time between point display,
                 points = points + 1;
                 sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
@@ -204,6 +196,7 @@ for i = 1:num_block
         state  = []; %current state of the newevents, empty between whiles to avoid processing incorrect events
         pred = 0; %reset decision values between trials
         prob = 0;
+        givefeed_time = getwTime(); %get current time
         
         sendEvent('move','start');
         
@@ -212,50 +205,40 @@ for i = 1:num_block
             %%%%%%%%% receive classification outcome %%%%%%%%%%%%
             
             % wait for new prediction events to process *or* end of trial time
-            [events,state,nsamples,nevents] = buffer_newevents(buffhost,buffport,state,'classifier.prediction',[],timeleft*1000);
-            if ( isempty(events) )
-                fprintf('%d) no predictions!\n',nsamples);
-            else % if events to process
-                [ans,si]=sort([events.sample],'ascend'); % proc in *temporal* order, ans = the event; si = index in original matrix
-                % loop over received prediction events.
-                for ei=1:numel(events); %loop for size of events
-                    ev=events(si(ei));% event to process
-                    
-                    pred = pred + ev.value; %accumulate decision values
-                    
-                    pred=pred+randn(1)*.1; %random outcome
-                    
-                    % now do something with the prediction...
-                    prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
-                    
-                    fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
-                end
-            end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            dval(p) = pred(1); %decision value
-            tl(p) = -1; %negative label
-            p = p + 1; %increment position
-            
-            if p >= num_pred
-                res.opt.tstf = cat(1,res.opt.tstf,dval');
-                res.Y = cat(1,res.Y,tl');
-                rocval(num).dvs = res.opt.tstf;
-                rocval(num).labels = res.Y;
-                [thresh_dv,res] = ROCthresh_online(res,cfgcls,'num_pred',num_pred,'prev_thresh',thresh_dv,'test',1);
-                thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
-                fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
-                rocval(num).thresh_dv = thresh_dv;
-                rocval(num).thresh = thresh;
-                dval = zeros(1,num_pred); tl = zeros(1,num_pred);
-                p = 1;
-                num = num + 1;
+            if (getwTime()-givefeed_time >= 1/4) %give predictions at 4Hz rate
                 
+                if num_dv > size(cfgcls.sham.dv_move{i,j},1)
+                    warning('Max dv vector value was surpassed')
+                else
+                    pred = pred + cfgcls.sham.dv_move{i,j}(num_dv,1); %accumulate decision values
+                    num_dv = num_dv +1;
+                end
+                
+                % now do something with the prediction...
+                prob = 1./(1+exp(-pred)); % convert from dv to probability (logistic transformation)
+                
+                fprintf('dv:');fprintf('%5.4f ',pred);fprintf('\t\tProb:');fprintf('%5.4f ',prob);fprintf('\n');
+                
+                %%%%%%% put recalc ROC threshold here %%%%%%%%%%%%%%%%%%%%%%%%%%
+                p = p + 1; %increment position
+                
+                if p >= num_pred
+                    if num > numel(cfgcls.sham.dv_ROCthresh)
+                        thresh_dv = cfgcls.sham.dv_ROCthresh(numel(cfgcls.sham.dv_ROCthresh));
+                        warning('Max ROC dv vector value was surpassed')
+                    else
+                        thresh_dv = cfgcls.sham.dv_ROCthresh(num);
+                    end
+                    
+                    thresh = 1./(1+exp(-thresh_dv)); % convert from dv to probability (logistic transformation)
+                    fprintf('The selected threshold is dv: %s or prob: %s\n',mat2str(thresh_dv,3),mat2str(thresh,3));
+                    
+                    p = 1;
+                    num = num + 1;
+                end
+                
+                givefeed_time = getwTime(); %restart time counter
             end
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             
             %fixation cross
             plot(5,5,'+','MarkerSize',45,'LineWidth',5,'Color','g');
@@ -280,7 +263,7 @@ for i = 1:num_block
             
             % feedback information...
             % change in points only if confident in right class
-            if prob(1) <= 1-thresh %outcome > rnd_thresh
+            if prob(1) <= 1-thresh
                 abductor_robot(angle,srl); %move to angle and return to init position
                 points = points + 1;
                 sendEvent('feedback',pred(1)); %send event with the feedback and corresponding dv
